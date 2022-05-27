@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32413.511
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanOS", "NanOS.csproj", "{EC8368AC-6D78-466A-B2F9-489C64C433A1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EC8368AC-6D78-466A-B2F9-489C64C433A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC8368AC-6D78-466A-B2F9-489C64C433A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC8368AC-6D78-466A-B2F9-489C64C433A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC8368AC-6D78-466A-B2F9-489C64C433A1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {590AE851-5648-4F25-B073-5FF9778D3195}
+	EndGlobalSection
+EndGlobal
