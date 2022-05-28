@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+using System.IO;
 using Sys = Cosmos.System;
 using Cosmos.System.Graphics;
 using Cosmos.HAL;
@@ -9,6 +11,7 @@ namespace NanOS
 {
     public class Kernel : Sys.Kernel
     {
+        string responce = "";
         public string osname = "NanOS";
         public string osversion = "1.0";
         public string kernelversion = "NanOS_kernel_1";
@@ -16,7 +19,6 @@ namespace NanOS
         public string shellname = "nansh";
         public string username = "";
         public VGAImage background = new VGAImage(640, 480);
-
 
         Sys.FileSystem.CosmosVFS fs;
         string current_directory = @"0:\";
@@ -85,7 +87,7 @@ namespace NanOS
                         "\nhelp - Shows a list of commands\nclear - Clears all text from the screen\nsysinfo - Shows system information\n" +
                         "kernel - shows info about the kernel\nbeep - Tests your PC Speaker\nchngeuname - Changes your username" +
                         "\ngfx - Enables graphics mode\ndiskinfo - Shows disk information\nmkdir - Creates a directory\n" +
-                        "mkfile - Creates a file\ncd - Change Directory");
+                        "mkfile - Creates a file\ncd - Change Directory\ndeldir - Delete a directory\ndelfile - Delete a file");
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
 
@@ -208,8 +210,105 @@ namespace NanOS
                         Sys.FileSystem.VFS.VFSManager.DeleteFile(path_file + filename);
                         Console.WriteLine("File {0} deleted in {1}", filename, path_file);
                     }
-
                     break;
+                #region Запись и чтение файла (Пока-что не работает! Пожалуйста если не сложно исправь :3 )
+                case "writestr":
+                    
+                    Console.WriteLine(@"Enter the path to the file (example: 0:\NanOSfiles\)");
+                    Console.WriteLine("If you want to stay in this directory, then press Enter");
+                    path_file = Console.ReadLine();
+                    Console.WriteLine("Enter file name");
+                    filename = Console.ReadLine();
+                    Console.WriteLine("Enter text");
+                    if (path_file == "")
+                    {
+                        try
+                        {
+                            FileStream strea = (FileStream)Sys.FileSystem.VFS.VFSManager.GetFile(current_directory + filename).GetFileStream();
+                            if (strea.CanWrite)
+                            {
+                                Byte[] data = Encoding.ASCII.GetBytes(current_directory + filename);                                
+                                strea.Write(data, 0, data.Length);
+                                strea.Close();
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unable to write to file! Not open for writing!");
+                                break;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.ToString());
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            FileStream streamm = (FileStream)Sys.FileSystem.VFS.VFSManager.GetFile(path_file + filename).GetFileStream();
+                            if (streamm.CanWrite)
+                            {
+                                Byte[] data = Encoding.ASCII.GetBytes(path_file + filename);
+                                streamm.Write(data, 0, data.Length);
+                                streamm.Close();
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unable to write to file! Not open for writing!");
+                                break;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.ToString());
+                        }
+                    }
+                    break;
+                case "read file":
+                    Console.WriteLine(@"Enter the path to the file (example: 0:\NanOSfiles\)");
+                    Console.WriteLine("If you want to stay in this directory, then press Enter");
+                    path_file = Console.ReadLine();
+                    Console.WriteLine("Enter file name");
+                    filename = Console.ReadLine();
+                    if(path_file == "")
+                    {
+                        FileStream stream = (FileStream)Sys.FileSystem.VFS.VFSManager.GetFile(current_directory + filename).GetFileStream();
+                        if (stream.CanRead)
+                        {
+                            Byte[] data = new Byte[256];
+                            stream.Read(data, 0, data.Length);
+                            responce = Encoding.ASCII.GetString(data);
+                            Console.WriteLine(responce);
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Error");
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        FileStream stream = (FileStream)Sys.FileSystem.VFS.VFSManager.GetFile(path_file + filename).GetFileStream();
+                        if (stream.CanRead)
+                        {
+                            Byte[] data = new Byte[256];
+                            stream.Read(data, 0, data.Length);
+                            responce = Encoding.ASCII.GetString(data);
+                            Console.WriteLine(responce);
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Error");
+                            break;
+                        }
+                    }
+                    
+                    
+                    break;
+                #endregion
                 case "diskinfo":
                     fs.GetDisks();
                     //Получить тип файловой системы
