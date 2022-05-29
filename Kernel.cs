@@ -3,25 +3,32 @@ using System.Text;
 using System.IO;
 using Sys = Cosmos.System;
 using Cosmos.System.Graphics;
+using Point = Cosmos.System.Graphics.Point;
 using Cosmos.HAL;
 using Cosmos.System.FileSystem.VFS;
 using Cosmos.System.FileSystem;
 using System.Drawing;
+using IL2CPU.API.Attribs;
 namespace NanOS
 {
     public class Kernel : Sys.Kernel
-    {
-        string responce = "";
+    { 
+        public Point point;
+        public Pen pen;
+        public static uint screenWidth = 1920;
+        public static uint screenHeight = 1080; 
         public string osname = "NanOS";
         public string osversion = "1.0";
         public string kernelversion = "NanOS_kernel_1";
         public string boottype = "Live USB/CD";
         public string shellname = "nansh";
         public string username = "";
-        public VGAImage background = new VGAImage(640, 480);
-
+        public static Bitmap wallpaper;
+        Canvas canvas;
         Sys.FileSystem.CosmosVFS fs;
         string current_directory = @"0:\";
+        [ManifestResourceStream(ResourceName = "Kernel.wallpaper.bmp")]
+        static byte[] file;
         protected override void BeforeRun()
         {
             fs = new Sys.FileSystem.CosmosVFS();
@@ -62,10 +69,12 @@ namespace NanOS
             Console.WriteLine("                        Type help to show command list");
             Console.WriteLine("                        ------------------------------");
             Console.ForegroundColor = ConsoleColor.White;
+            
         }
         protected override void Run()
         {
-
+            // canvas.DrawImage(wallpaper, 0,0);
+            
             #region os
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write("NanOS");
@@ -86,32 +95,49 @@ namespace NanOS
                     Console.WriteLine("restart - restart pc\nshutdown - Kills all processes and prepares your PC for shutdown" +
                         "\nhelp - Shows a list of commands\nclear - Clears all text from the screen\nsysinfo - Shows system information\n" +
                         "kernel - shows info about the kernel\nbeep - Tests your PC Speaker\nchngeuname - Changes your username" +
-                        "\ngfx - Enables graphics mode\ndiskinfo - Shows disk information\nmkdir - Creates a directory\n" +
+                        "\ngfx on - Enables graphics mode" +
+                        "\ngfx off - Disables graphics mode\ndiskinfo - Shows disk information\nmkdir - Creates a directory\n" +
                         "mkfile - Creates a file\ncd - Change Directory\ndeldir - Delete a directory\ndelfile - Delete a file");
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
 
-                case "gfx":
+                case "gfx on":
+
                     Console.Clear();
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("                     WARNING! Graphics mode is in testing!" +
-                        "\n                 If you want to turn it off, just type restart!" +
+                        "\n                If you want to turn it off, just type gfx off!" +
                         " \n                         Press any key to continue.");
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.ReadKey();
-                    background.FromFile("Wallpaper.png");
-                    VGADriverII.Initialize(VGAMode.Pixel320x200DB);
-                    VGAGraphics.DrawFilledRect(60, 50, 400, 20, VGAColor.Black12);
-                    VGAGraphics.Clear(VGAColor.Cyan9);
-                    VGAGraphics.DrawImage(0, 0, background);
-                    VGAGraphics.DrawFilledRect(0, 190, 400, 10, VGAColor.Cyan11);
-                    VGAGraphics.DrawFilledRect(0, 190, 46, 15, VGAColor.Cyan2);
-                    VGAGraphics.DrawString(0, 192, "Start", VGAColor.White, VGAFont.Font8x8);
-                    VGAGraphics.DrawString(139, 3, "NanOS", VGAColor.White, VGAFont.Font8x16);
-                    VGAGraphics.DrawFilledRect(40, 30, 100, 100, VGAColor.White);
-                    VGAGraphics.DrawString(56, 33, "DiskInfo", VGAColor.Black, VGAFont.Font8x16);
-                    VGAGraphics.Display();
+                    Sys.PCSpeaker.Beep();
+                    canvas = FullScreenCanvas.GetFullScreenCanvas(new Mode(1024, 768, ColorDepth.ColorDepth32));
+                    canvas.Clear(Color.FromArgb(41, 51, 64));
+                    canvas.Display();
+                    // canvas.DrawImage(wallpaper, new Point (320, 100));
+                    /*  background.FromFile(@"0:\Wallpaper.bmp");
+                      VGADriverII.Initialize(VGAMode.Pixel320x200DB);
+                      VGAGraphics.DrawFilledRect(60, 50, 400, 20, VGAColor.Black12);
+                      VGAGraphics.Clear(VGAColor.Cyan9);
+                      VGAGraphics.DrawImage(0, 0, background);
+                      VGAGraphics.DrawFilledRect(0, 190, 400, 10, VGAColor.Cyan11);
+                      VGAGraphics.DrawFilledRect(0, 190, 46, 15, VGAColor.Cyan2);
+                      VGAGraphics.DrawString(0, 192, "Start", VGAColor.White, VGAFont.Font8x8);
+                      VGAGraphics.DrawString(139, 3, "NanOS", VGAColor.White, VGAFont.Font8x16);
+                      VGAGraphics.DrawFilledRect(40, 30, 100, 100, VGAColor.White);
+                      VGAGraphics.DrawString(56, 33, "DiskInfo", VGAColor.Black, VGAFont.Font8x16);
+                      VGAGraphics.Display();
+                     */
                     break;
+
+                case "gfx off":
+                    Console.Clear();
+                    canvas.Disable();
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.WriteLine("                 Graphics mode is off. To enable write gfx.");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    break;
+
                 case "beep":
                     Sys.PCSpeaker.Beep();
                     break;
@@ -123,8 +149,8 @@ namespace NanOS
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine("Your username changed succeful! Hello {0}", username);
                     Console.ForegroundColor = ConsoleColor.White;
-
                     break;
+
                 case "mkdir":
                     Console.WriteLine(@"Enter the path or directory name (example: 0:\NanOSdirectory\MyDirectory)");
                     Console.WriteLine(@"If you want to create a directory in the directory you are currently in, then press Enter)");
@@ -211,104 +237,6 @@ namespace NanOS
                         Console.WriteLine("File {0} deleted in {1}", filename, path_file);
                     }
                     break;
-                #region Запись и чтение файла (Пока-что не работает! Пожалуйста если не сложно исправь :3 )
-                case "writestr":
-                    
-                    Console.WriteLine(@"Enter the path to the file (example: 0:\NanOSfiles\)");
-                    Console.WriteLine("If you want to stay in this directory, then press Enter");
-                    path_file = Console.ReadLine();
-                    Console.WriteLine("Enter file name");
-                    filename = Console.ReadLine();
-                    Console.WriteLine("Enter text");
-                    if (path_file == "")
-                    {
-                        try
-                        {
-                            FileStream strea = (FileStream)Sys.FileSystem.VFS.VFSManager.GetFile(current_directory + filename).GetFileStream();
-                            if (strea.CanWrite)
-                            {
-                                Byte[] data = Encoding.ASCII.GetBytes(current_directory + filename);                                
-                                strea.Write(data, 0, data.Length);
-                                strea.Close();
-                            }
-                            else
-                            {
-                                Console.WriteLine("Unable to write to file! Not open for writing!");
-                                break;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.ToString());
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            FileStream streamm = (FileStream)Sys.FileSystem.VFS.VFSManager.GetFile(path_file + filename).GetFileStream();
-                            if (streamm.CanWrite)
-                            {
-                                Byte[] data = Encoding.ASCII.GetBytes(path_file + filename);
-                                streamm.Write(data, 0, data.Length);
-                                streamm.Close();
-                            }
-                            else
-                            {
-                                Console.WriteLine("Unable to write to file! Not open for writing!");
-                                break;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.ToString());
-                        }
-                    }
-                    break;
-                case "read file":
-                    Console.WriteLine(@"Enter the path to the file (example: 0:\NanOSfiles\)");
-                    Console.WriteLine("If you want to stay in this directory, then press Enter");
-                    path_file = Console.ReadLine();
-                    Console.WriteLine("Enter file name");
-                    filename = Console.ReadLine();
-                    if(path_file == "")
-                    {
-                        FileStream stream = (FileStream)Sys.FileSystem.VFS.VFSManager.GetFile(current_directory + filename).GetFileStream();
-                        if (stream.CanRead)
-                        {
-                            Byte[] data = new Byte[256];
-                            stream.Read(data, 0, data.Length);
-                            responce = Encoding.ASCII.GetString(data);
-                            Console.WriteLine(responce);
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Error");
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        FileStream stream = (FileStream)Sys.FileSystem.VFS.VFSManager.GetFile(path_file + filename).GetFileStream();
-                        if (stream.CanRead)
-                        {
-                            Byte[] data = new Byte[256];
-                            stream.Read(data, 0, data.Length);
-                            responce = Encoding.ASCII.GetString(data);
-                            Console.WriteLine(responce);
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Error");
-                            break;
-                        }
-                    }
-                    
-                    
-                    break;
-                #endregion
                 case "diskinfo":
                     fs.GetDisks();
                     //Получить тип файловой системы
@@ -376,7 +304,7 @@ namespace NanOS
                     break;
                 case "kernel -a":
                     Console.ForegroundColor = ConsoleColor.DarkGreen;
-                    Console.WriteLine("NanOS_kernel_1 Based on Linux. Core created May 4, 2022");
+                    Console.WriteLine("NanOS_kernel_1. Core created May 4, 2022\nKernel.NanOS");
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
                 case "dir":
