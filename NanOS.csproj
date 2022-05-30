@@ -142,9 +142,22 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="wallpaper.bmp" />
+      <None Remove="wallpaper1.bmp" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="wallpaper1.bmp" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Cosmos.Build" Version="0-*" NoWarn="NU1604" />
         <PackageReference Include="Cosmos.Debug.Kernel" Version="0-*" NoWarn="NU1604" />
         <PackageReference Include="Cosmos.System2" Version="0-*" NoWarn="NU1604" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Resource Include="wallpaper.bmp" />
     </ItemGroup>
 
 </Project>

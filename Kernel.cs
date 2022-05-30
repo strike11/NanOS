@@ -9,14 +9,15 @@ using Cosmos.System.FileSystem.VFS;
 using Cosmos.System.FileSystem;
 using System.Drawing;
 using IL2CPU.API.Attribs;
+
 namespace NanOS
 {
     public class Kernel : Sys.Kernel
-    { 
+    {
         public Point point;
         public Pen pen;
         public static uint screenWidth = 1920;
-        public static uint screenHeight = 1080; 
+        public static uint screenHeight = 1080;
         public string osname = "NanOS";
         public string osversion = "1.0";
         public string kernelversion = "NanOS_kernel_1";
@@ -27,7 +28,7 @@ namespace NanOS
         Canvas canvas;
         Sys.FileSystem.CosmosVFS fs;
         string current_directory = @"0:\";
-        [ManifestResourceStream(ResourceName = "Kernel.wallpaper.bmp")]
+        [ManifestResourceStream(ResourceName = "NanOS.wallpaper1.bmp")]
         static byte[] file;
         protected override void BeforeRun()
         {
@@ -35,7 +36,7 @@ namespace NanOS
             Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
             fs.CreateDirectory(@"0:\System");
             fs.CreateDirectory(@"0:\System\Users");
-            fs.CreateFile(@"0:\System\Users\Users.dax");
+            fs.CreateFile(@"0:\System\Users\Users.db");
             Console.WriteLine("LOADING NanOS_kernel_1");
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.DarkCyan;
@@ -69,12 +70,12 @@ namespace NanOS
             Console.WriteLine("                        Type help to show command list");
             Console.WriteLine("                        ------------------------------");
             Console.ForegroundColor = ConsoleColor.White;
-            
+
         }
         protected override void Run()
         {
-            // canvas.DrawImage(wallpaper, 0,0);
-            
+        //    Commands.CommandHandle();
+            wallpaper = new Bitmap(file);
             #region os
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write("NanOS");
@@ -111,23 +112,10 @@ namespace NanOS
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.ReadKey();
                     Sys.PCSpeaker.Beep();
-                    canvas = FullScreenCanvas.GetFullScreenCanvas(new Mode(1024, 768, ColorDepth.ColorDepth32));
+                    canvas = FullScreenCanvas.GetFullScreenCanvas(new Mode(1920, 1080, ColorDepth.ColorDepth32));
                     canvas.Clear(Color.FromArgb(41, 51, 64));
+                    canvas.DrawImage(wallpaper, 0, 0);
                     canvas.Display();
-                    // canvas.DrawImage(wallpaper, new Point (320, 100));
-                    /*  background.FromFile(@"0:\Wallpaper.bmp");
-                      VGADriverII.Initialize(VGAMode.Pixel320x200DB);
-                      VGAGraphics.DrawFilledRect(60, 50, 400, 20, VGAColor.Black12);
-                      VGAGraphics.Clear(VGAColor.Cyan9);
-                      VGAGraphics.DrawImage(0, 0, background);
-                      VGAGraphics.DrawFilledRect(0, 190, 400, 10, VGAColor.Cyan11);
-                      VGAGraphics.DrawFilledRect(0, 190, 46, 15, VGAColor.Cyan2);
-                      VGAGraphics.DrawString(0, 192, "Start", VGAColor.White, VGAFont.Font8x8);
-                      VGAGraphics.DrawString(139, 3, "NanOS", VGAColor.White, VGAFont.Font8x16);
-                      VGAGraphics.DrawFilledRect(40, 30, 100, 100, VGAColor.White);
-                      VGAGraphics.DrawString(56, 33, "DiskInfo", VGAColor.Black, VGAFont.Font8x16);
-                      VGAGraphics.Display();
-                     */
                     break;
 
                 case "gfx off":
@@ -347,5 +335,13 @@ namespace NanOS
 
             #endregion
         }
+    }
+    public static class Commands
+    {
+        public static void CommandHandler()
+        {
+            // code
+        }
+
     }
 }
