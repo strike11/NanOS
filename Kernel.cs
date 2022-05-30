@@ -9,15 +9,20 @@ using Cosmos.System.FileSystem.VFS;
 using Cosmos.System.FileSystem;
 using System.Drawing;
 using IL2CPU.API.Attribs;
+using NanOS.GUI.Graphics;
+using NanOS.Commands;
 
 namespace NanOS
 {
     public class Kernel : Sys.Kernel
     {
-        public Point point;
-        public Pen pen;
-        public static uint screenWidth = 1920;
-        public static uint screenHeight = 1080;
+        Point p1;
+        
+        public string hours;
+        public string minute;
+        public static Graphics gui;
+        public static uint Width = 1920;
+        public static uint Height = 1080;
         public string osname = "NanOS";
         public string osversion = "1.0";
         public string kernelversion = "NanOS_kernel_1";
@@ -25,17 +30,28 @@ namespace NanOS
         public string shellname = "nansh";
         public string username = "";
         public static Bitmap wallpaper;
-        Canvas canvas;
+        public static Bitmap poweroffimg;
+        public static Bitmap cursor;
+        public Canvas canvas;
         Sys.FileSystem.CosmosVFS fs;
         string current_directory = @"0:\";
+        //Стандартные обои
         [ManifestResourceStream(ResourceName = "NanOS.wallpaper1.bmp")]
-        static byte[] file;
+        static byte[] wallpaperbyte;
+        [ManifestResourceStream(ResourceName = "NanOS.poweroff.bmp")]
+        static byte[] powerofficon;
+        [ManifestResourceStream(ResourceName = "NanOS.cursor.bmp")]
+        static byte[] cursorbyte;
         protected override void BeforeRun()
         {
+            Console.Clear();
             fs = new Sys.FileSystem.CosmosVFS();
             Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
+            Console.WriteLine("[*] Creating System directory ");
             fs.CreateDirectory(@"0:\System");
+            Console.WriteLine("[*] Creating Users directory ");
             fs.CreateDirectory(@"0:\System\Users");
+            Console.WriteLine("[*] Creating Users db ");
             fs.CreateFile(@"0:\System\Users\Users.db");
             Console.WriteLine("LOADING NanOS_kernel_1");
             Console.Clear();
@@ -74,8 +90,8 @@ namespace NanOS
         }
         protected override void Run()
         {
-        //    Commands.CommandHandle();
-            wallpaper = new Bitmap(file);
+            
+            //    Commands.CommandHandle();
             #region os
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write("NanOS");
@@ -85,8 +101,31 @@ namespace NanOS
             Console.Write(" {0}>>> ", current_directory);
             Console.ForegroundColor = ConsoleColor.White;
             var input = Console.ReadLine();
+            #region commands
             switch (input)
             {
+                case "sysinfo":
+                    //Получить vendorname (сам хз че это, но пусть будет)
+                    string CPU_vendorname = Cosmos.Core.CPU.GetCPUVendorName();
+                    // Оперативка
+                    uint amount_of_ram = Cosmos.Core.CPU.GetAmountOfRAM();
+                    // Название процессора
+                    string cpubrand = Cosmos.Core.CPU.GetCPUBrandString();
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.BackgroundColor = ConsoleColor.DarkGray;
+                    Console.WriteLine("OS NAME: " + osname);
+                    Console.WriteLine("OS VERSION: " + osversion);
+                    Console.WriteLine("KERNEL VERSION: " + kernelversion);
+                    Console.WriteLine("BOOT TYPE: " + boottype);
+                    Console.WriteLine("SHELL: " + shellname);
+                    Console.WriteLine("CURRENT USER: " + username);
+                    Console.WriteLine("CPU: " + cpubrand);
+                    Console.WriteLine("Amount of RAM: " + amount_of_ram + " MB");
+                    Console.WriteLine("CPU Vendor Name: " + CPU_vendorname);
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.ForegroundColor = ConsoleColor.White;
+                    break;
+
                 case "help":
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("=============================");
@@ -103,7 +142,18 @@ namespace NanOS
                     break;
 
                 case "gfx on":
-
+                    cpubrand = Cosmos.Core.CPU.GetCPUBrandString();
+                    Point p1 = new Point();
+                    p1.X = 820;
+                    p1.Y = 17;
+                    Console.WriteLine("[ NanOS.nansh ] Loading the basic driver");
+                    Console.WriteLine("[ NanOS.nansh ] Desktop loading");
+                    wallpaper = new Bitmap(wallpaperbyte);
+                    Console.WriteLine("[ NanOS.nansh ] Loading Buttons...");
+                    poweroffimg = new Bitmap(powerofficon);
+                    Console.WriteLine("[ NanOS.nansh ] Loading Cursor...");
+                    cursor = new Bitmap(cursorbyte);
+                    Console.WriteLine("[ NanOS.nansh ] Loaded!");
                     Console.Clear();
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("                     WARNING! Graphics mode is in testing!" +
@@ -113,8 +163,17 @@ namespace NanOS
                     Console.ReadKey();
                     Sys.PCSpeaker.Beep();
                     canvas = FullScreenCanvas.GetFullScreenCanvas(new Mode(1920, 1080, ColorDepth.ColorDepth32));
+                    Pen pen = new Pen(Color.Red);
                     canvas.Clear(Color.FromArgb(41, 51, 64));
                     canvas.DrawImage(wallpaper, 0, 0);
+                    pen.Color = Color.White;
+                    canvas.DrawFilledRectangle(pen, 0, 0, 1920, 40);
+                    canvas.DrawImage(poweroffimg, 1880, 8);
+                    canvas.DrawImage(cursor, 900, 500);
+                    Cosmos.HAL.RTC.Hour.ToString(hours);
+                    Cosmos.HAL.RTC.Minute.ToString(minute);
+                    pen.Color = Color.Black;
+                    canvas.DrawString(cpubrand,Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pen, p1);
                     canvas.Display();
                     break;
 
@@ -250,27 +309,7 @@ namespace NanOS
                 case " ":
                     Console.WriteLine("");
                     break;
-                case "sysinfo":
-                    //Получить vendorname (сам хз че это, но пусть будет)
-                    string CPU_vendorname = Cosmos.Core.CPU.GetCPUVendorName();
-                    // Оперативка
-                    uint amount_of_ram = Cosmos.Core.CPU.GetAmountOfRAM();
-                    // Название процессора
-                    string cpubrand = Cosmos.Core.CPU.GetCPUBrandString();
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.BackgroundColor = ConsoleColor.DarkGray;
-                    Console.WriteLine("OS NAME: " + osname);
-                    Console.WriteLine("OS VERSION: " + osversion);
-                    Console.WriteLine("KERNEL VERSION: " + kernelversion);
-                    Console.WriteLine("BOOT TYPE: " + boottype);
-                    Console.WriteLine("SHELL: " + shellname);
-                    Console.WriteLine("CURRENT USER: " + username);
-                    Console.WriteLine("CPU: " + cpubrand);
-                    Console.WriteLine("Amount of RAM: " + amount_of_ram + " MB");
-                    Console.WriteLine("CPU Vendor Name: " + CPU_vendorname);
-                    Console.BackgroundColor = ConsoleColor.Black;
-                    Console.ForegroundColor = ConsoleColor.White;
-                    break;
+                
                 default:
                     Console.WriteLine(input + ": Command Not Found");
                     break;
@@ -332,16 +371,11 @@ namespace NanOS
                     }
                     break;
             }
+            #endregion
 
             #endregion
         }
-    }
-    public static class Commands
-    {
-        public static void CommandHandler()
-        {
-            // code
-        }
 
     }
+    
 }

@@ -142,11 +142,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="cursor.bmp" />
+      <None Remove="logoos.bmp" />
+      <None Remove="poweroff.bmp" />
       <None Remove="wallpaper.bmp" />
       <None Remove="wallpaper1.bmp" />
     </ItemGroup>
 
     <ItemGroup>
+      <EmbeddedResource Include="cursor.bmp" />
+      <EmbeddedResource Include="poweroff.bmp" />
       <EmbeddedResource Include="wallpaper1.bmp" />
     </ItemGroup>
 
@@ -158,6 +163,10 @@
 
     <ItemGroup>
       <Resource Include="wallpaper.bmp" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Wallpapers\" />
     </ItemGroup>
 
 </Project>
