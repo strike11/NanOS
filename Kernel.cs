@@ -42,7 +42,7 @@ namespace NanOS
         static byte[] powerofficon;
         [ManifestResourceStream(ResourceName = "NanOS.resources.consoleapp.bmp")]
         static byte[] consoleappicon;
-        
+
         protected override void BeforeRun()
         {
             Console.Clear();
@@ -105,6 +105,9 @@ namespace NanOS
             #region commands
             switch (input)
             {
+                case "date":
+                    //Сюда надо как-то время запихать чтобы отображалсь часы и минуты в видео текста
+                    break;
                 case "sysinfo":
                     //Получить vendorname (сам хз че это, но пусть будет)
                     string CPU_vendorname = Cosmos.Core.CPU.GetCPUVendorName();
@@ -143,16 +146,16 @@ namespace NanOS
                     break;
 
                 case "gfx on":
+                    Console.Clear();
                     cpubrand = Cosmos.Core.CPU.GetCPUBrandString();
                     Point p1 = new Point();
-                    p1.X = 820;
-                    p1.Y = 17;
+                    p1.X = 815;
+                    p1.Y = 15;
                     Console.WriteLine("[ NanOS.nansh ] Loading the basic driver");
                     Console.WriteLine("[ NanOS.nansh ] Desktop loading");
                     wallpaper = new Bitmap(wallpaperbyte);
-                    Console.WriteLine("[ NanOS.nansh ] Loading Buttons...");
+                    Console.WriteLine("[ NanOS.nansh ] Loading GUI Elements...");
                     poweroffimg = new Bitmap(powerofficon);
-                    Console.WriteLine("[ NanOS.nansh ] Loading Cursor...");
                     consoleico = new Bitmap(consoleappicon);
                     Console.WriteLine("[ NanOS.nansh ] Loaded!");
                     Console.Clear();
@@ -169,14 +172,16 @@ namespace NanOS
                     canvas.DrawImage(wallpaper, 0, 0);
                     pen.Color = Color.White;
                     canvas.DrawFilledRectangle(pen, 0, 0, 1920, 40);
+                    pen.Color = Color.FromArgb(173, 192, 255);
                     canvas.DrawFilledRectangle(pen, 740, 1048, 450, 200);
                     canvas.DrawImage(poweroffimg, 1880, 8);
                     canvas.DrawImage(consoleico, 758, 1020);
                     canvas.DrawString(cpubrand,Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pen, p1);
-                    Cosmos.HAL.RTC.Hour.ToString(hours);
-                    Cosmos.HAL.RTC.Minute.ToString(minute);
                     pen.Color = Color.Black;
                     canvas.DrawString(cpubrand,Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pen, p1);
+                    p1.X = 34;
+                    p1.Y = 14;
+                    canvas.DrawString("User: " + username, Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pen, p1);
                     canvas.Display();
                     break;
 
