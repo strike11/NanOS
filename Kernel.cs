@@ -28,6 +28,7 @@ namespace NanOS
         public static Bitmap wallpaper;
         public static Bitmap poweroffimg;
         public static Bitmap consoleico;
+        public static Bitmap pcinfoico;
         public Canvas canvas;
         byte year = Cosmos.HAL.RTC.Year;
         byte month = Cosmos.HAL.RTC.Month;
@@ -39,10 +40,12 @@ namespace NanOS
         //Стандартные обои
         [ManifestResourceStream(ResourceName = "NanOS.Wallpapers.wallpaper1.bmp")]
         static byte[] wallpaperbyte;
-        [ManifestResourceStream(ResourceName = "NanOS.resources.poweroff.bmp")]
+        [ManifestResourceStream(ResourceName = "NanOS.resources.poweroffAlpha.bmp")]
         static byte[] powerofficon;
-        [ManifestResourceStream(ResourceName = "NanOS.resources.consoleapp.bmp")]
+        [ManifestResourceStream(ResourceName = "NanOS.resources.console.bmp")]
         static byte[] consoleappicon;
+        [ManifestResourceStream(ResourceName = "NanOS.resources.pcinfoicon.bmp")]
+        static byte[] pcinfobye;
 
         protected override void BeforeRun()
         {
@@ -69,8 +72,8 @@ namespace NanOS
             Console.Write("Username: ");
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             username = Console.ReadLine();
-            fs.GetDirectory(@"0:\System\Users\");
-            fs.GetFile(@"0:\System\Users\Users.dax").GetFileStream();
+         //   fs.GetDirectory(@"0:\System\Users\");
+         //   fs.GetFile(@"0:\System\Users\Users.dax").GetFileStream();
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine("             Welcome to NanOS {0}. Press any key to get started!", username);
             Console.ReadKey();
@@ -156,6 +159,7 @@ namespace NanOS
                     Console.WriteLine("[ NanOS.nansh ] Desktop loading");
                     wallpaper = new Bitmap(wallpaperbyte);
                     Console.WriteLine("[ NanOS.nansh ] Loading GUI Elements...");
+                    pcinfoico = new Bitmap(pcinfobye);
                     poweroffimg = new Bitmap(powerofficon);
                     consoleico = new Bitmap(consoleappicon);
                     Console.WriteLine("[ NanOS.nansh ] Loaded!");
@@ -172,17 +176,18 @@ namespace NanOS
                     Pen pen = new Pen(Color.Red);
                     canvas.Clear(Color.FromArgb(41, 51, 64));
                     canvas.DrawImage(wallpaper, 0, 0);
-                    pen.Color = Color.White;
+                    pen.Color = Color.FromArgb(7, 71, 94);
                     //Верхняя белая линия
                     canvas.DrawFilledRectangle(pen, 0, 0, 1920, 40);
-                    pen.Color = Color.FromArgb(173, 192, 255);
+                    pen.Color = Color.FromArgb(23, 53, 89);
                     //Нижняя линия для приложений
                     canvas.DrawFilledRectangle(pen, 740, 1048, 450, 200);
                     //Картинка выключения
-                    canvas.DrawImage(poweroffimg, 1880, 8);
-                    //Картинка консоли
+                    canvas.DrawImageAlpha(poweroffimg, 1880, 8);
+                    //Картинки приложений снизу
                     canvas.DrawImage(consoleico, 758, 1020);
-                    pen.Color = Color.Black;
+                    canvas.DrawImageAlpha(pcinfoico, 790, 1020);
+                    pen.Color = Color.White;
                     //Дата сверху
                     p1.X = 935;
                     p1.Y = 8;
@@ -411,7 +416,7 @@ namespace NanOS
             canvas.DrawString("Processor: " + cpubrand,Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
             pointPCinfo.X = 105;
             pointPCinfo.Y = 487;
-            canvas.DrawString("RAM : " + amount_of_ram, Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
+            canvas.DrawString("RAM : " + amount_of_ram+"MB", Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
             pointPCinfo.X = 105;
             pointPCinfo.Y = 507;
             canvas.DrawString("CPU Vendor: " + CPU_vendorname, Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
