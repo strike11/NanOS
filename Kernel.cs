@@ -31,27 +31,28 @@ namespace NanOS
         public string username = "";
         public static Bitmap wallpaper;
         public static Bitmap poweroffimg;
-        public static Bitmap cursor;
+        public static Bitmap consoleico;
         public Canvas canvas;
         Sys.FileSystem.CosmosVFS fs;
         string current_directory = @"0:\";
         //Стандартные обои
-        [ManifestResourceStream(ResourceName = "NanOS.wallpaper1.bmp")]
+        [ManifestResourceStream(ResourceName = "NanOS.Wallpapers.wallpaper1.bmp")]
         static byte[] wallpaperbyte;
-        [ManifestResourceStream(ResourceName = "NanOS.poweroff.bmp")]
+        [ManifestResourceStream(ResourceName = "NanOS.resources.poweroff.bmp")]
         static byte[] powerofficon;
-        [ManifestResourceStream(ResourceName = "NanOS.cursor.bmp")]
-        static byte[] cursorbyte;
+        [ManifestResourceStream(ResourceName = "NanOS.resources.consoleapp.bmp")]
+        static byte[] consoleappicon;
+        
         protected override void BeforeRun()
         {
             Console.Clear();
             fs = new Sys.FileSystem.CosmosVFS();
             Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
-            Console.WriteLine("[*] Creating System directory ");
+            Console.WriteLine("[ NanOS.nansh ] Creating System directory ");
             fs.CreateDirectory(@"0:\System");
-            Console.WriteLine("[*] Creating Users directory ");
+            Console.WriteLine("[ NanOS.nansh ] Creating Users directory ");
             fs.CreateDirectory(@"0:\System\Users");
-            Console.WriteLine("[*] Creating Users db ");
+            Console.WriteLine("[ NanOS.nansh ] Creating Users db ");
             fs.CreateFile(@"0:\System\Users\Users.db");
             Console.WriteLine("LOADING NanOS_kernel_1");
             Console.Clear();
@@ -152,7 +153,7 @@ namespace NanOS
                     Console.WriteLine("[ NanOS.nansh ] Loading Buttons...");
                     poweroffimg = new Bitmap(powerofficon);
                     Console.WriteLine("[ NanOS.nansh ] Loading Cursor...");
-                    cursor = new Bitmap(cursorbyte);
+                    consoleico = new Bitmap(consoleappicon);
                     Console.WriteLine("[ NanOS.nansh ] Loaded!");
                     Console.Clear();
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -168,8 +169,10 @@ namespace NanOS
                     canvas.DrawImage(wallpaper, 0, 0);
                     pen.Color = Color.White;
                     canvas.DrawFilledRectangle(pen, 0, 0, 1920, 40);
+                    canvas.DrawFilledRectangle(pen, 740, 1048, 450, 200);
                     canvas.DrawImage(poweroffimg, 1880, 8);
-                    canvas.DrawImage(cursor, 900, 500);
+                    canvas.DrawImage(consoleico, 758, 1020);
+                    canvas.DrawString(cpubrand,Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pen, p1);
                     Cosmos.HAL.RTC.Hour.ToString(hours);
                     Cosmos.HAL.RTC.Minute.ToString(minute);
                     pen.Color = Color.Black;

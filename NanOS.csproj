@@ -142,17 +142,26 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <None Remove="cursor.bmp" />
+      <None Remove="Fonts\Oswald.ttf" />
       <None Remove="logoos.bmp" />
       <None Remove="poweroff.bmp" />
+      <None Remove="resources\consoleapp.bmp" />
+      <None Remove="resources\NanOSlogo.bmp" />
+      <None Remove="resources\poweroff.bmp" />
       <None Remove="wallpaper.bmp" />
       <None Remove="wallpaper1.bmp" />
+      <None Remove="Wallpapers\wallpaperblue.bmp" />
+      <None Remove="Wallpapers\wallpaperpurple.bmp" />
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="cursor.bmp" />
-      <EmbeddedResource Include="poweroff.bmp" />
-      <EmbeddedResource Include="wallpaper1.bmp" />
+      <EmbeddedResource Include="Fonts\Oswald.ttf" />
+      <EmbeddedResource Include="resources\consoleapp.bmp" />
+      <EmbeddedResource Include="resources\NanOSlogo.bmp" />
+      <EmbeddedResource Include="resources\poweroff.bmp" />
+      <EmbeddedResource Include="Wallpapers\wallpaper1.bmp" />
+      <EmbeddedResource Include="Wallpapers\wallpaperblue.bmp" />
+      <EmbeddedResource Include="Wallpapers\wallpaperpurple.bmp" />
     </ItemGroup>
 
     <ItemGroup>
@@ -163,10 +172,6 @@
 
     <ItemGroup>
       <Resource Include="wallpaper.bmp" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Wallpapers\" />
     </ItemGroup>
 
 </Project>
