@@ -150,9 +150,11 @@
       <None Remove="resources\consoleapp.bmp" />
       <None Remove="resources\Cursor.bmp" />
       <None Remove="resources\NanOSlogo.bmp" />
+      <None Remove="resources\otherapps.bmp" />
       <None Remove="resources\pcinfoicon.bmp" />
       <None Remove="resources\poweroff.bmp" />
       <None Remove="resources\poweroffAlpha.bmp" />
+      <None Remove="resources\settingsico.bmp" />
       <None Remove="wallpaper.bmp" />
       <None Remove="wallpaper1.bmp" />
       <None Remove="Wallpapers\wallpaperblue.bmp" />
@@ -164,6 +166,8 @@
       <EmbeddedResource Include="resources\appicon.bmp" />
       <EmbeddedResource Include="resources\console.bmp" />
       <EmbeddedResource Include="resources\Cursor.bmp" />
+      <EmbeddedResource Include="resources\otherapps.bmp" />
+      <EmbeddedResource Include="resources\settingsico.bmp" />
       <Resource Include="resources\consoleapp.bmp" />
       <EmbeddedResource Include="resources\NanOSlogo.bmp" />
       <EmbeddedResource Include="resources\pcinfoicon.bmp" />

@@ -25,6 +25,8 @@ namespace NanOS
         public string boottype = "Live USB/CD";
         public string shellname = "nansh";
         public string username = "";
+        public static Bitmap settingsico;
+        public static Bitmap otherappsico;
         public static Bitmap wallpaper;
         public static Bitmap poweroffimg;
         public static Bitmap consoleico;
@@ -49,7 +51,10 @@ namespace NanOS
         static byte[] pcinfobye;
         [ManifestResourceStream(ResourceName = "NanOS.resources.appicon.bmp")]
         static byte[] appiconbyte;
-
+        [ManifestResourceStream(ResourceName = "NanOS.resources.settingsico.bmp")]
+        static byte[] settingsicobyte;
+        [ManifestResourceStream(ResourceName = "NanOS.resources.otherapps.bmp")]
+        static byte[] otherappsbyte;
         protected override void BeforeRun()
         {
             Console.Clear();
@@ -162,6 +167,8 @@ namespace NanOS
                     Console.WriteLine("[ NanOS.nansh ] Desktop loading");
                     wallpaper = new Bitmap(wallpaperbyte);
                     Console.WriteLine("[ NanOS.nansh ] Loading GUI Elements...");
+                    otherappsico = new Bitmap(otherappsbyte);
+                    settingsico = new Bitmap(settingsicobyte);
                     appicon = new Bitmap(appiconbyte);
                     pcinfoico = new Bitmap(pcinfobye);
                     poweroffimg = new Bitmap(powerofficon);
@@ -192,6 +199,8 @@ namespace NanOS
                     canvas.DrawImage(consoleico, 758, 1020);
                     canvas.DrawImage(appicon, 830, 1020);
                     canvas.DrawImageAlpha(pcinfoico, 902, 1020);
+                    canvas.DrawImageAlpha(settingsico, 974, 1020);
+                    canvas.DrawImageAlpha(otherappsico, 1120, 1020);
                     pen.Color = Color.White;
                     //Дата сверху
                     p1.X = 935;
