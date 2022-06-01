@@ -145,6 +145,7 @@
       <None Remove="Fonts\Oswald.ttf" />
       <None Remove="logoos.bmp" />
       <None Remove="poweroff.bmp" />
+      <None Remove="resources\appicon.bmp" />
       <None Remove="resources\console.bmp" />
       <None Remove="resources\consoleapp.bmp" />
       <None Remove="resources\Cursor.bmp" />
@@ -160,6 +161,7 @@
 
     <ItemGroup>
       <EmbeddedResource Include="Fonts\Oswald.ttf" />
+      <EmbeddedResource Include="resources\appicon.bmp" />
       <EmbeddedResource Include="resources\console.bmp" />
       <EmbeddedResource Include="resources\Cursor.bmp" />
       <Resource Include="resources\consoleapp.bmp" />

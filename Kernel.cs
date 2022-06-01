@@ -29,6 +29,7 @@ namespace NanOS
         public static Bitmap poweroffimg;
         public static Bitmap consoleico;
         public static Bitmap pcinfoico;
+        public static Bitmap appicon;
         public Canvas canvas;
         byte year = Cosmos.HAL.RTC.Year;
         byte month = Cosmos.HAL.RTC.Month;
@@ -46,6 +47,8 @@ namespace NanOS
         static byte[] consoleappicon;
         [ManifestResourceStream(ResourceName = "NanOS.resources.pcinfoicon.bmp")]
         static byte[] pcinfobye;
+        [ManifestResourceStream(ResourceName = "NanOS.resources.appicon.bmp")]
+        static byte[] appiconbyte;
 
         protected override void BeforeRun()
         {
@@ -159,6 +162,7 @@ namespace NanOS
                     Console.WriteLine("[ NanOS.nansh ] Desktop loading");
                     wallpaper = new Bitmap(wallpaperbyte);
                     Console.WriteLine("[ NanOS.nansh ] Loading GUI Elements...");
+                    appicon = new Bitmap(appiconbyte);
                     pcinfoico = new Bitmap(pcinfobye);
                     poweroffimg = new Bitmap(powerofficon);
                     consoleico = new Bitmap(consoleappicon);
@@ -186,7 +190,8 @@ namespace NanOS
                     canvas.DrawImageAlpha(poweroffimg, 1880, 8);
                     //Картинки приложений снизу
                     canvas.DrawImage(consoleico, 758, 1020);
-                    canvas.DrawImageAlpha(pcinfoico, 790, 1020);
+                    canvas.DrawImage(appicon, 830, 1020);
+                    canvas.DrawImageAlpha(pcinfoico, 902, 1020);
                     pen.Color = Color.White;
                     //Дата сверху
                     p1.X = 935;
@@ -205,11 +210,11 @@ namespace NanOS
                     break;
 
                 case "gfx off":
-                    Console.Clear();
-                    canvas.Disable();
-                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.WriteLine("                 Graphics mode is off. To enable write gfx.");
-                    Console.ForegroundColor = ConsoleColor.White;
+                        Console.Clear();
+                        canvas.Disable();
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine("                 Graphics mode is off. To enable write gfx.");
+                        Console.ForegroundColor = ConsoleColor.White;
                     break;
 
                 case "beep":
