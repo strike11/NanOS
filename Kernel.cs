@@ -11,6 +11,7 @@ using System.Drawing;
 using IL2CPU.API.Attribs;
 using NanOS.GUI.Graphics;
 using NanOS.Commands;
+using Cosmos.HAL.Network;
 
 namespace NanOS
 {
@@ -40,7 +41,7 @@ namespace NanOS
         byte Minutes = Cosmos.HAL.RTC.Minute;
         Sys.FileSystem.CosmosVFS fs;
         string current_directory = @"0:\";
-        //Стандартные обои
+        //bmp картинки
         [ManifestResourceStream(ResourceName = "NanOS.Wallpapers.wallpaper1.bmp")]
         static byte[] wallpaperbyte;
         [ManifestResourceStream(ResourceName = "NanOS.resources.poweroffAlpha.bmp")]
@@ -122,6 +123,10 @@ namespace NanOS
                     //Сюда надо как-то время запихать чтобы отображалсь часы и минуты в видео текста
                     break;
                 case "sysinfo":
+                    //Доступно ОЗУ
+                    ulong avialible_ram = Cosmos.Core.GCImplementation.GetAvailableRAM();
+                    //Использованно ОЗУ
+                    uint used_ram =  Cosmos.Core.GCImplementation.GetUsedRAM();
                     //Получить vendorname (сам хз че это, но пусть будет)
                     string CPU_vendorname = Cosmos.Core.CPU.GetCPUVendorName();
                     // Оперативка
@@ -137,8 +142,10 @@ namespace NanOS
                     Console.WriteLine("SHELL: " + shellname);
                     Console.WriteLine("CURRENT USER: " + username);
                     Console.WriteLine("CPU: " + cpubrand);
-                    Console.WriteLine("Amount of RAM: " + amount_of_ram + " MB");
                     Console.WriteLine("CPU Vendor Name: " + CPU_vendorname);
+                    Console.WriteLine("Amount of RAM: " + amount_of_ram + " MB");
+                    Console.WriteLine("Avialible RAM: " + avialible_ram + " MB");
+                    Console.WriteLine("Used RAM: " + used_ram + " B");
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
@@ -415,6 +422,10 @@ namespace NanOS
         }
         public void PCinfoAPP()
         {
+            //Доступно ОЗУ
+            ulong avialible_ram = Cosmos.Core.GCImplementation.GetAvailableRAM();
+            //Использованно ОЗУ
+            uint used_ram = Cosmos.Core.GCImplementation.GetUsedRAM();
             //Получить vendorname (сам хз че это, но пусть будет)
             string CPU_vendorname = Cosmos.Core.CPU.GetCPUVendorName();
             // Оперативка
@@ -430,10 +441,16 @@ namespace NanOS
             canvas.DrawString("Processor: " + cpubrand,Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
             pointPCinfo.X = 105;
             pointPCinfo.Y = 487;
-            canvas.DrawString("RAM : " + amount_of_ram+"MB", Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
+            canvas.DrawString("CPU Vendor: " + CPU_vendorname, Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
             pointPCinfo.X = 105;
             pointPCinfo.Y = 507;
-            canvas.DrawString("CPU Vendor: " + CPU_vendorname, Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
+            canvas.DrawString("RAM : " + amount_of_ram + "MB", Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
+            pointPCinfo.X = 105;
+            pointPCinfo.Y = 527;
+            canvas.DrawString("Avialible RAM : " + avialible_ram + "MB", Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
+            pointPCinfo.X = 105;
+            pointPCinfo.Y = 547;
+            canvas.DrawString("Used RAM : " + used_ram + "B", Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
             canvas.Display();
         }
 
