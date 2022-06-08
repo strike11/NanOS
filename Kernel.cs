@@ -391,7 +391,7 @@ namespace NanOS
                     break;
 
                 case "catall":
-                    var directory_list1 = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(@"0:\");
+                    var directory_list1 = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(current_directory);
                     try
                     {
                         foreach (var directoryEntry in directory_list1)
