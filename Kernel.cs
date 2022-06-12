@@ -64,6 +64,8 @@ namespace NanOS
             Console.WriteLine("LOADING NanOS_kernel_1");
             Console.WriteLine("[ NanOS.nansh ] Creating System directory ");
             fs.CreateDirectory(@"0:\System");
+            fs.CreateDirectory(@"0:\System\GUI");
+            fs.CreateDirectory(@"0:\System\DirTest");
             Console.WriteLine("[ NanOS.nansh ] Creating Users directory ");
             fs.CreateDirectory(@"0:\System\Users");
             Console.WriteLine("[ NanOS.nansh ] Creating Users db ");
@@ -82,7 +84,7 @@ namespace NanOS
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             username = Console.ReadLine();
          //   fs.GetDirectory(@"0:\System\Users\");
-         //   fs.GetFile(@"0:\System\Users\Users.dax").GetFileStream();
+         //   fs.GetFile(@"0:\System\Users\Users.db").GetFileStream();
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine("             Welcome to NanOS {0}. Press any key to get started!", username);
             Console.ReadKey();
@@ -113,13 +115,24 @@ namespace NanOS
             Console.ForegroundColor = ConsoleColor.White;
             Commands();            
         }
-
         public void Commands()
         {
             var input = Console.ReadLine();
             switch (input)
             {
+                case "whoami":
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine("I am {0}",username);
+                    Console.ForegroundColor = ConsoleColor.White;
+                    break;
                 case "date":
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.WriteLine("Year - " + year);
+                    Console.WriteLine("Month - " + month);
+                    Console.WriteLine("Day - " + day);
+                    Console.WriteLine("Hours - " + hour);
+                    Console.WriteLine("Minutes - " + Minutes);
+                    Console.ForegroundColor = ConsoleColor.White;
                     //Сюда надо как-то время запихать чтобы отображалсь часы и минуты в видео текста
                     break;
                 case "sysinfo":
@@ -154,6 +167,7 @@ namespace NanOS
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("=============================");
                     Console.WriteLine("   :::::Command list:::::");
+                    Console.WriteLine("     :::::Page 1:::::");
                     Console.WriteLine("=============================");
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("restart - restart pc\nshutdown - Kills all processes and prepares your PC for shutdown" +
@@ -161,10 +175,19 @@ namespace NanOS
                         "kernel - shows info about the kernel\nbeep - Tests your PC Speaker\nchngeuname - Changes your username" +
                         "\ngfx on - Enables graphics mode" +
                         "\ngfx off - Disables graphics mode\ndiskinfo - Shows disk information\nmkdir - Creates a directory\n" +
-                        "mkfile - Creates a file\ncd - Change Directory\ndeldir - Delete a directory\ndelfile - Delete a file");
+                        "mkfile - Creates a file\ncd - Change Directory\ndeldir - Delete a directory\ndelfile - Delete a file" +
+                        "\nhelp2 - Shows the second page of commands");
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
-
+                case "help2":
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("=============================");
+                    Console.WriteLine("   :::::Command list:::::");
+                    Console.WriteLine("     :::::Page 2:::::");
+                    Console.WriteLine("=============================");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("whoami - Shows your user name\ndate - Shows the current date");
+                    break;
                 case "gfx on":
                     Console.Clear();
                     cpubrand = Cosmos.Core.CPU.GetCPUBrandString();
