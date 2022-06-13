@@ -12,14 +12,16 @@ using IL2CPU.API.Attribs;
 using NanOS.GUI.Graphics;
 using NanOS.Commands;
 using Cosmos.HAL.Network;
+using Cosmos.Core.IOGroup;
 
 namespace NanOS
 {
     public class Kernel : Sys.Kernel
     {
+        public Mouse m = new Mouse();
         public static Graphics gui;
-        public static uint Width = 1920;
-        public static uint Height = 1080;
+        public static int Width;
+        public static int Height;
         public string osname = "NanOS";
         public string osversion = "1.0";
         public string kernelversion = "NanOS_kernel_1";
@@ -127,11 +129,14 @@ namespace NanOS
                     break;
                 case "date":
                     Console.ForegroundColor = ConsoleColor.Magenta;
-                    Console.WriteLine("Year - " + year);
-                    Console.WriteLine("Month - " + month);
-                    Console.WriteLine("Day - " + day);
-                    Console.WriteLine("Hours - " + hour);
-                    Console.WriteLine("Minutes - " + Minutes);
+                    Console.WriteLine("");
+                    Console.Write(day);
+                    Console.Write("." + month);
+                    Console.Write("." + year);
+                    Console.WriteLine("");
+                    Console.Write(hour);
+                    Console.Write(":" + Minutes);
+                    Console.WriteLine("");
                     Console.ForegroundColor = ConsoleColor.White;
                     //Сюда надо как-то время запихать чтобы отображалсь часы и минуты в видео текста
                     break;
@@ -203,17 +208,28 @@ namespace NanOS
                     pcinfoico = new Bitmap(pcinfobye);
                     poweroffimg = new Bitmap(powerofficon);
                     consoleico = new Bitmap(consoleappicon);
+                    Pen penmouse = new Pen(Color.Red);
                     Console.WriteLine("[ NanOS.nansh ] Loaded!");
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.Clear();
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("                     WARNING! Graphics mode is in testing!" +
-                        "\n                If you want to turn it off, just type gfx off!" +
-                        " \n                         Press any key to continue.");
+                        "\n                  If you want to turn it off, just type gfx off!" +
+                        " \n                     Please write the width and height of the screen.");
+                    Console.WriteLine("");
+                    Console.Write("Width: ");
+                    Width = Convert.ToInt32(Console.ReadLine());
+                    Console.WriteLine("");
+                    Console.Write("Height: ");
+                    Height = Convert.ToInt32(Console.ReadLine());
+                    Console.WriteLine("");
+                    Console.WriteLine("This is right?\n" + Width + "x" + Height);
+                    Console.WriteLine("Press any key to continue");
+                    Console.ReadKey();
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.ReadKey();
                     Sys.PCSpeaker.Beep();
-                    canvas = FullScreenCanvas.GetFullScreenCanvas(new Mode(1920, 1080, ColorDepth.ColorDepth32));
+                    canvas = FullScreenCanvas.GetFullScreenCanvas(new Mode(Width, Height, ColorDepth.ColorDepth32));
                     Pen pen = new Pen(Color.Red);
                     canvas.Clear(Color.FromArgb(41, 51, 64));
                     canvas.DrawImage(wallpaper, 0, 0);
