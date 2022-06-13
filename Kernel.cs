@@ -191,7 +191,8 @@ namespace NanOS
                     Console.WriteLine("     :::::Page 2:::::");
                     Console.WriteLine("=============================");
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("whoami - Shows your user name\ndate - Shows the current date");
+                    Console.WriteLine("whoami - Shows your user name\ndate - Shows the current date" +
+                        "\nwritefile - Writes text to your file\nreadfile - Reads text from the selected file");
                     break;
                 case "gfx on":
                     Console.Clear();
@@ -284,7 +285,13 @@ namespace NanOS
                     Console.WriteLine("Your username changed succeful! Hello {0}", username);
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
-
+                case "dir":
+                    var directory_list = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(current_directory);
+                    foreach (var directoryEntry in directory_list)
+                    {
+                        Console.WriteLine(directoryEntry.mName);
+                    }
+                    break;
                 case "mkdir":
                     Console.WriteLine(@"Enter the path or directory name (example: 0:\NanOSdirectory\MyDirectory)");
                     Console.WriteLine(@"If you want to create a directory in the directory you are currently in, then press Enter)");
@@ -371,6 +378,42 @@ namespace NanOS
                         Console.WriteLine("File {0} deleted in {1}", filename, path_file);
                     }
                     break;
+                case "writefile":
+                    Console.WriteLine("Welcome to NanOS writestr app!");
+                    Console.WriteLine("Write text");
+                    var StringTXT = Console.ReadLine();
+                    Console.WriteLine("Please enter file name!");
+                    filename = Console.ReadLine();
+                    try
+                    {
+                        File.WriteAllText(current_directory + filename, StringTXT);
+                        Console.WriteLine("Text writed succeful!");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error!");
+                        Console.WriteLine(e.ToString());
+                    }
+                    break;
+                case "readfile":
+                    Console.WriteLine("Please enter file name!");
+                    filename = Console.ReadLine();
+                    try
+                    {
+                        Console.WriteLine("---------------------------------------");
+                        Console.WriteLine("   "+filename);
+                        Console.WriteLine("---------------------------------------");
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine(File.ReadAllText(current_directory + filename));
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine("---------------------------------------");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.Write("Error: ");
+                        Console.Write(e.ToString());
+                    }
+                    break;
                 case "diskinfo":
                     fs.GetDisks();
                     //Получить тип файловой системы
@@ -421,13 +464,7 @@ namespace NanOS
                     Console.WriteLine("NanOS_kernel_1. Core created May 4, 2022\nKernel.NanOS");
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
-                case "dir":
-                    var directory_list = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(current_directory);
-                    foreach (var directoryEntry in directory_list)
-                    {
-                        Console.WriteLine(directoryEntry.mName);
-                    }
-                    break;
+                
 
                 case "catall":
                     var directory_list1 = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(current_directory);
