@@ -128,6 +128,11 @@ namespace NanOS
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
                 case "date":
+                    year = Cosmos.HAL.RTC.Year;
+                    month = Cosmos.HAL.RTC.Month;
+                    day = Cosmos.HAL.RTC.DayOfTheMonth;
+                    hour = Cosmos.HAL.RTC.Hour;
+                    Minutes = Cosmos.HAL.RTC.Minute;
                     Console.ForegroundColor = ConsoleColor.Magenta;
                     Console.WriteLine("");
                     Console.Write(day);
@@ -141,6 +146,7 @@ namespace NanOS
                     //Сюда надо как-то время запихать чтобы отображалсь часы и минуты в видео текста
                     break;
                 case "sysinfo":
+                    string filesystemtype = fs.GetFileSystemType(@"0:\");            
                     //Доступно ОЗУ
                     ulong avialible_ram = Cosmos.Core.GCImplementation.GetAvailableRAM();
                     //Использованно ОЗУ
@@ -164,6 +170,7 @@ namespace NanOS
                     Console.WriteLine("Amount of RAM: " + amount_of_ram + " MB");
                     Console.WriteLine("Avialible RAM: " + avialible_ram + " MB");
                     Console.WriteLine("Used RAM: " + used_ram + " B");
+                    Console.WriteLine("File System: "+ filesystemtype);
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
@@ -289,8 +296,17 @@ namespace NanOS
                     var directory_list = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(current_directory);
                     foreach (var directoryEntry in directory_list)
                     {
-                        Console.WriteLine(directoryEntry.mName);
+                        var entry_type = directoryEntry.mEntryType;
+                        if (entry_type == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.File)
+                        {
+                            Console.WriteLine(directoryEntry.mName + "                         <FILE>");
+                        }
+                        if(entry_type == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.Directory)
+                        {
+                            Console.WriteLine(directoryEntry.mName + "                         <DIRECTORY>");
+                        }
                     }
+
                     break;
                 case "mkdir":
                     Console.WriteLine(@"Enter the path or directory name (example: 0:\NanOSdirectory\MyDirectory)");
@@ -361,6 +377,7 @@ namespace NanOS
                     break;
 
                 case "delfile":
+                    //Удаление файла
                     Console.WriteLine(@"Enter the path to the file (example: 0:\NanOSfiles\family.txt)");
                     Console.WriteLine("If you want delete a file in the directory you are currently in, then press Enter");
                     path_file = Console.ReadLine();
@@ -379,11 +396,12 @@ namespace NanOS
                     }
                     break;
                 case "writefile":
+                    //Запись текста в файл
                     Console.WriteLine("Welcome to NanOS writestr app!");
-                    Console.WriteLine("Write text");
-                    var StringTXT = Console.ReadLine();
                     Console.WriteLine("Please enter file name!");
                     filename = Console.ReadLine();
+                    Console.WriteLine("Write text");
+                    var StringTXT = Console.ReadLine();
                     try
                     {
                         File.WriteAllText(current_directory + filename, StringTXT);
@@ -396,6 +414,7 @@ namespace NanOS
                     }
                     break;
                 case "readfile":
+                    //Чтение из файла
                     Console.WriteLine("Please enter file name!");
                     filename = Console.ReadLine();
                     try
@@ -412,18 +431,20 @@ namespace NanOS
                     {
                         Console.Write("Error: ");
                         Console.Write(e.ToString());
+                        Console.WriteLine("");
                     }
                     break;
                 case "diskinfo":
                     fs.GetDisks();
                     //Получить тип файловой системы
-                    string filesystemtype = fs.GetFileSystemType(@"0:\");
+                    long available_space = Sys.FileSystem.VFS.VFSManager.GetAvailableFreeSpace(@"0:\");
+                    filesystemtype = fs.GetFileSystemType(@"0:\");
                     //Получить размер диска
                     long total_size = fs.GetTotalSize(@"0:\");
                     //Свободное место
-                    long available_space = Sys.FileSystem.VFS.VFSManager.GetAvailableFreeSpace(@"0:\");
-                    Console.WriteLine("Available Free Space: " + available_space + " MB");
-                    Console.WriteLine("Total size: " + total_size + " MB");
+                     available_space = Sys.FileSystem.VFS.VFSManager.GetAvailableFreeSpace(@"0:\");
+                    Console.WriteLine("Available Free Space: " + available_space + " B");
+                    Console.WriteLine("Total size: " + total_size + " B");
                     Console.WriteLine("File System type: " + filesystemtype);
                     break;
 
