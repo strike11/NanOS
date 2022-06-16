@@ -19,7 +19,6 @@ namespace NanOS
 {
     public class Kernel : Sys.Kernel
     {
-        public Errors errors;
         public Mouse m = new Mouse();
         public static Graphics gui;
         public static int Width;
@@ -318,7 +317,7 @@ namespace NanOS
                         }
                         catch (Exception e)
                         {
-                            errors.ErrorDirectoryNotFound();
+                            Console.WriteLine("Error: Directory not found");
                             Console.WriteLine(e.ToString());
                         }
                         
@@ -434,7 +433,7 @@ namespace NanOS
                     }
                     else
                     {
-                        errors.ErrorFileNotFound();
+                        Console.WriteLine("Error: NanOS.File.Not.Found");
                         break;
                     }
                     break;
@@ -461,19 +460,19 @@ namespace NanOS
                     break;
                 case "copyfile":
                     string dirtocopy = @"0:\";
-                    Console.WriteLine("Please enter file name");
-                    filename = Console.ReadLine();
                     Console.WriteLine("Enter the directory where you want to copy the file");
                     Console.Write(@"0:\");
                     dirtocopy = @"0:\" + Console.ReadLine();
-                    if (File.Exists(filename))
+                    if (Directory.Exists(dirtocopy))
                     {
+                        Console.WriteLine("Please enter file name");
+                        filename = Console.ReadLine();
                         File.Copy(current_directory + filename, dirtocopy);
                         Console.WriteLine("File {0} copied to {1}", filename, dirtocopy);
                     }
                     else
                     {
-                        errors.ErrorFileNotFound();
+                        Console.WriteLine("Error: NanOS.Directory.Not.Found");
                     }
                     break;
                 case "diskinfo":
@@ -513,7 +512,6 @@ namespace NanOS
                     }
                     catch (Exception e)
                     {
-                        errors.ErrorDirectoryNotFound();
                         Console.WriteLine(e.ToString());
                     }
                     break;
