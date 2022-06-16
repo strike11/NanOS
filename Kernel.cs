@@ -475,6 +475,23 @@ namespace NanOS
                         Console.WriteLine("Error: NanOS.Directory.Not.Found");
                     }
                     break;
+                case "renamefile":
+                    string newfilename = "";
+                    Console.WriteLine("Enter file name");
+                    filename = Console.ReadLine();
+                    Console.WriteLine("Write new name for {0}", filename);
+                    newfilename = Console.ReadLine();
+                    try
+                    {
+                        File.Copy(current_directory + filename,current_directory + newfilename);
+                        Console.WriteLine("File {0} renamed!", filename);
+                        Sys.FileSystem.VFS.VFSManager.DeleteFile(current_directory + filename);
+                    }
+                    catch(Exception e)
+                    {
+                        Console.WriteLine(e.ToString());
+                    }
+                    break;
                 case "diskinfo":
                     fs.GetDisks();
                     //Получить тип файловой системы
