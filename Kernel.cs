@@ -11,6 +11,7 @@ using System.Drawing;
 using IL2CPU.API.Attribs;
 using NanOS.GUI.Graphics;
 using NanOS.Commands;
+using NanOS;
 using Cosmos.HAL.Network;
 using Cosmos.Core.IOGroup;
 
@@ -18,6 +19,7 @@ namespace NanOS
 {
     public class Kernel : Sys.Kernel
     {
+        public Errors errors;
         public Mouse m = new Mouse();
         public static Graphics gui;
         public static int Width;
@@ -65,13 +67,7 @@ namespace NanOS
             Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
             Console.WriteLine("LOADING NanOS_kernel_1");
             Console.WriteLine("[ NanOS.nansh ] Creating System directory ");
-            fs.CreateDirectory(@"0:\System");
-            fs.CreateDirectory(@"0:\System\GUI");
-            fs.CreateDirectory(@"0:\System\DirTest");
             Console.WriteLine("[ NanOS.nansh ] Creating Users directory ");
-            fs.CreateDirectory(@"0:\System\Users");
-            Console.WriteLine("[ NanOS.nansh ] Creating Users db ");
-            fs.CreateFile(@"0:\System\Users\Users.db");
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.WriteLine(@"                    NN   NN   AAA   NN   NN  OOOOO   SSSSS  
@@ -85,8 +81,6 @@ namespace NanOS
             Console.Write("Username: ");
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             username = Console.ReadLine();
-         //   fs.GetDirectory(@"0:\System\Users\");
-         //   fs.GetFile(@"0:\System\Users\Users.db").GetFileStream();
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine("             Welcome to NanOS {0}. Press any key to get started!", username);
             Console.ReadKey();
@@ -145,6 +139,15 @@ namespace NanOS
                     Console.ForegroundColor = ConsoleColor.White;
                     //Сюда надо как-то время запихать чтобы отображалсь часы и минуты в видео текста
                     break;
+                case "cow":
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine(@"\|/          (__)    
+     `\------(oo)
+       ||    (__)
+       ||w--||     \|/
+   \|/");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    break;
                 case "sysinfo":
                     string filesystemtype = fs.GetFileSystemType(@"0:\");            
                     //Доступно ОЗУ
@@ -199,7 +202,8 @@ namespace NanOS
                     Console.WriteLine("=============================");
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("whoami - Shows your user name\ndate - Shows the current date" +
-                        "\nwritefile - Writes text to your file\nreadfile - Reads text from the selected file");
+                        "\nwritefile - Writes text to your file\nreadfile - Reads text from the selected file" +
+                        "\ncopyfile - Copies a file to the selected path\ncow - Draws a cow");
                     break;
                 case "gfx on":
                     Console.Clear();
@@ -296,15 +300,28 @@ namespace NanOS
                     var directory_list = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(current_directory);
                     foreach (var directoryEntry in directory_list)
                     {
-                        var entry_type = directoryEntry.mEntryType;
-                        if (entry_type == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.File)
+                        try
                         {
-                            Console.WriteLine(directoryEntry.mName + "                         <FILE>");
+                            var entry_type = directoryEntry.mEntryType;
+                            if (entry_type == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.File)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Magenta;
+                                Console.WriteLine(directoryEntry.mName + "                         <FILE>");
+                                Console.ForegroundColor = ConsoleColor.White;
+                            }
+                            if (entry_type == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.Directory)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Blue;
+                                Console.WriteLine(directoryEntry.mName + "                         <DIRECTORY>");
+                                Console.ForegroundColor = ConsoleColor.White;
+                            }
                         }
-                        if(entry_type == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.Directory)
+                        catch (Exception e)
                         {
-                            Console.WriteLine(directoryEntry.mName + "                         <DIRECTORY>");
+                            errors.ErrorDirectoryNotFound();
+                            Console.WriteLine(e.ToString());
                         }
+                        
                     }
 
                     break;
@@ -400,17 +417,25 @@ namespace NanOS
                     Console.WriteLine("Welcome to NanOS writestr app!");
                     Console.WriteLine("Please enter file name!");
                     filename = Console.ReadLine();
-                    Console.WriteLine("Write text");
-                    var StringTXT = Console.ReadLine();
-                    try
+                    if (File.Exists(current_directory+filename))
                     {
-                        File.WriteAllText(current_directory + filename, StringTXT);
-                        Console.WriteLine("Text writed succeful!");
+                        Console.WriteLine("Write text");
+                        var StringTXT = Console.ReadLine();
+                        try
+                        {
+                            File.WriteAllText(current_directory + filename, StringTXT);
+                            Console.WriteLine("Text writed succeful!");
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Error!");
+                            Console.WriteLine(e.ToString());
+                        }
                     }
-                    catch (Exception e)
+                    else
                     {
-                        Console.WriteLine("Error!");
-                        Console.WriteLine(e.ToString());
+                        errors.ErrorFileNotFound();
+                        break;
                     }
                     break;
                 case "readfile":
@@ -434,6 +459,23 @@ namespace NanOS
                         Console.WriteLine("");
                     }
                     break;
+                case "copyfile":
+                    string dirtocopy = @"0:\";
+                    Console.WriteLine("Please enter file name");
+                    filename = Console.ReadLine();
+                    Console.WriteLine("Enter the directory where you want to copy the file");
+                    Console.Write(@"0:\");
+                    dirtocopy = @"0:\" + Console.ReadLine();
+                    if (File.Exists(filename))
+                    {
+                        File.Copy(current_directory + filename, dirtocopy);
+                        Console.WriteLine("File {0} copied to {1}", filename, dirtocopy);
+                    }
+                    else
+                    {
+                        errors.ErrorFileNotFound();
+                    }
+                    break;
                 case "diskinfo":
                     fs.GetDisks();
                     //Получить тип файловой системы
@@ -449,10 +491,31 @@ namespace NanOS
                     break;
 
                 case "cd":
-                    //Тут думаю всё понятно
+                    //Смена директорий
                     Console.WriteLine(@"Enter the path (example: 0:\Apps\)");
-                    current_directory = Console.ReadLine();
-                    fs.GetDirectory(current_directory);
+                    Console.Write(@"0:\");
+                    try
+                    {
+                        current_directory = @"0:\" + Console.ReadLine();
+                        if (Directory.Exists(current_directory))
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Directory changed!");
+                            Console.ForegroundColor = ConsoleColor.White;
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            current_directory = @"0:\";
+                            Console.WriteLine("Error: NanOS.Directory.Not.Found");
+                            Console.ForegroundColor = ConsoleColor.White;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        errors.ErrorDirectoryNotFound();
+                        Console.WriteLine(e.ToString());
+                    }
                     break;
                 case "":
 
