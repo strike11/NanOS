@@ -158,6 +158,7 @@
       <None Remove="wallpaper.bmp" />
       <None Remove="wallpaper1.bmp" />
       <None Remove="Wallpapers\wallpaperblue.bmp" />
+      <None Remove="Wallpapers\wallpapernano.bmp" />
       <None Remove="Wallpapers\wallpaperpurple.bmp" />
     </ItemGroup>
 
@@ -168,6 +169,7 @@
       <EmbeddedResource Include="resources\Cursor.bmp" />
       <EmbeddedResource Include="resources\otherapps.bmp" />
       <EmbeddedResource Include="resources\settingsico.bmp" />
+      <EmbeddedResource Include="Wallpapers\wallpapernano.bmp" />
       <Resource Include="resources\consoleapp.bmp" />
       <EmbeddedResource Include="resources\NanOSlogo.bmp" />
       <EmbeddedResource Include="resources\pcinfoicon.bmp" />

@@ -112,6 +112,8 @@ namespace NanOS
         }
         public void Commands()
         {
+            var path_file = "";
+            var path_dir = "";
             var input = Console.ReadLine();
             switch (input)
             {
@@ -172,11 +174,9 @@ namespace NanOS
                     Console.WriteLine("Amount of RAM: " + amount_of_ram + " MB");
                     Console.WriteLine("Avialible RAM: " + avialible_ram + " MB");
                     Console.WriteLine("Used RAM: " + used_ram + " B");
-                    Console.WriteLine("File System: "+ filesystemtype);
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
-
                 case "help":
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("=============================");
@@ -186,7 +186,7 @@ namespace NanOS
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("restart - restart pc\nshutdown - Kills all processes and prepares your PC for shutdown" +
                         "\nhelp - Shows a list of commands\nclear - Clears all text from the screen\nsysinfo - Shows system information\n" +
-                        "kernel - shows info about the kernel\nbeep - Tests your PC Speaker\nchngeuname - Changes your username" +
+                        "kernel - Shows info about the kernel\nbeep - Tests your PC Speaker\nchngeuname - Changes your username" +
                         "\ngfx on - Enables graphics mode" +
                         "\ngfx off - Disables graphics mode\ndiskinfo - Shows disk information\nmkdir - Creates a directory\n" +
                         "mkfile - Creates a file\ncd - Change Directory\ndeldir - Delete a directory\ndelfile - Delete a file" +
@@ -225,8 +225,8 @@ namespace NanOS
                     Console.Clear();
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("                     WARNING! Graphics mode is in testing!" +
-                        "\n                  If you want to turn it off, just type gfx off!" +
-                        " \n                     Please write the width and height of the screen.");
+                        "\n                 If you want to turn it off, just type gfx off!" +
+                        " \n                Please write the width and height of the screen.");
                     Console.WriteLine("");
                     Console.Write("Width: ");
                     Width = Convert.ToInt32(Console.ReadLine());
@@ -258,6 +258,12 @@ namespace NanOS
                     canvas.DrawImageAlpha(pcinfoico, 902, 1020);
                     canvas.DrawImageAlpha(settingsico, 974, 1020);
                     canvas.DrawImageAlpha(otherappsico, 1120, 1020);
+                    //Получить время
+                    year = Cosmos.HAL.RTC.Year;
+                    month = Cosmos.HAL.RTC.Month;
+                    day = Cosmos.HAL.RTC.DayOfTheMonth;
+                    hour = Cosmos.HAL.RTC.Hour;
+                    Minutes = Cosmos.HAL.RTC.Minute;
                     pen.Color = Color.White;
                     //Дата сверху
                     p1.X = 935;
@@ -272,6 +278,7 @@ namespace NanOS
                     //Имя пользователя
                     canvas.DrawString("User: " + username, Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pen, p1);
                      PCinfoAPP();
+
                     canvas.Display();
                     break;
 
@@ -325,90 +332,49 @@ namespace NanOS
 
                     break;
                 case "mkdir":
-                    Console.WriteLine(@"Enter the path or directory name (example: 0:\NanOSdirectory\MyDirectory)");
-                    Console.WriteLine(@"If you want to create a directory in the directory you are currently in, then press Enter)");
-                    var path_dir = Console.ReadLine();
                     Console.WriteLine("Enter Directory name");
                     var dirname = Console.ReadLine();
-                    //Если просто нажали Enter
-                    if (path_dir == "")
-                    {
-                        fs.CreateDirectory(current_directory + dirname);
-                        Console.WriteLine("Directory {0} created in {1}", dirname, current_directory);
-                    }
-                    else
-                    {
-                        //Если ввели путь
-                        fs.CreateDirectory(path_dir + dirname);
-                        Console.WriteLine("Directory {0} created in {1}", dirname, path_dir);
-                    }
+                    fs.CreateDirectory(current_directory + dirname);
+                    Console.WriteLine("Directory {0} created in {1}", dirname, current_directory);
                     break;
                 case "mkfile":
-                    Console.WriteLine(@"Enter the path to the file (example: 0:\NanOSfiles\family.txt)");
-                    Console.WriteLine("If you want to create a file in the directory you are currently in, then press Enter");
-                    var path_file = Console.ReadLine();
                     Console.WriteLine("Enter file name");
                     var filename = Console.ReadLine();
-                    //Если просто нажали Enter
-                    if (path_file == "")
-                    {
-                        fs.CreateFile(current_directory + filename);
-                        Console.WriteLine("File {0} created in {1}", filename, current_directory);
-                    }
-                    else
-                    {
-                        //Если просто ввели путь
-                        fs.CreateFile(path_file + filename);
-                        Console.WriteLine("File {0} created in {1}", filename, path_file);
-                    }
+                    fs.CreateFile(current_directory + filename);
+                    Console.WriteLine("File {0} created in {1}", filename, current_directory);
                     break;
                 case "deldir":
-                    Console.WriteLine(@"Enter the path to the directory (example: 0:\NanOSfiles\)");
-                    Console.WriteLine("If you want delete a directory in the directory you are currently in, then press Enter");
-                    path_dir = Console.ReadLine();
                     Console.WriteLine("Enter directory name");
                     dirname = Console.ReadLine();
-                    if (path_dir == @"0:\System\")
+                    if (dirname == "System")
                     {
                         Console.WriteLine("This is system directory! You cannot delete it!");
                         break;
                     }
-                    if (dirname == @"System")
-                    {
-                        Console.WriteLine("This is system directory! You cannot delete it!");
-                        break;
-                    }
-                    if (path_dir == "")
+                    if (Directory.Exists(current_directory + dirname))
                     {
                         Sys.FileSystem.VFS.VFSManager.DeleteDirectory(current_directory + dirname, true);
                         Console.WriteLine("Directory {0} deleted in {1}", dirname, current_directory);
                     }
                     else
                     {
-                        //Если просто ввели путь
-                        Sys.FileSystem.VFS.VFSManager.DeleteDirectory(path_dir + dirname, true);
-                        Console.WriteLine("Directory {0} deleted in {1}", dirname, path_dir);
+                        Console.WriteLine("Error: NanOS.Directory.Not.Found");
                     }
-
+                    
                     break;
 
                 case "delfile":
                     //Удаление файла
-                    Console.WriteLine(@"Enter the path to the file (example: 0:\NanOSfiles\family.txt)");
-                    Console.WriteLine("If you want delete a file in the directory you are currently in, then press Enter");
-                    path_file = Console.ReadLine();
                     Console.WriteLine("Enter file name");
                     filename = Console.ReadLine();
-                    if (path_file == "")
+                    if (File.Exists(current_directory + filename))
                     {
                         Sys.FileSystem.VFS.VFSManager.DeleteFile(current_directory + filename);
                         Console.WriteLine("File {0} deleted in {1}", filename, current_directory);
                     }
                     else
                     {
-                        //Если просто ввели путь
-                        Sys.FileSystem.VFS.VFSManager.DeleteFile(path_file + filename);
-                        Console.WriteLine("File {0} deleted in {1}", filename, path_file);
+                        Console.WriteLine("Error: NanOS.File.Not.Found");
                     }
                     break;
                 case "writefile":
@@ -492,6 +458,16 @@ namespace NanOS
                         Console.WriteLine(e.ToString());
                     }
                     break;
+                case "movefile":
+                    string dirtomove;
+                    Console.WriteLine("Enter file name");
+                    filename = Console.ReadLine();
+                    Console.WriteLine("Enter dir");
+                    Console.Write(@"0:\");
+                    dirtomove = @"0:\" + Console.ReadLine();
+                    File.Copy(current_directory + filename, dirtomove + filename);
+                    Sys.FileSystem.VFS.VFSManager.DeleteFile(current_directory + filename);
+                    break;
                 case "diskinfo":
                     fs.GetDisks();
                     //Получить тип файловой системы
@@ -505,7 +481,6 @@ namespace NanOS
                     Console.WriteLine("Total size: " + total_size + " B");
                     Console.WriteLine("File System type: " + filesystemtype);
                     break;
-
                 case "cd":
                     //Смена директорий
                     Console.WriteLine(@"Enter the path (example: 0:\Apps\)");
@@ -537,10 +512,6 @@ namespace NanOS
                     break;
                 case " ":
                     Console.WriteLine("");
-                    break;
-
-                default:
-                    Console.WriteLine(input + ": Command Not Found");
                     break;
                 case "restart":
                     Cosmos.System.Power.Reboot();
@@ -593,7 +564,14 @@ namespace NanOS
                         Console.WriteLine(e.ToString());
                     }
                     break;
+
+                default:
+                    Console.BackgroundColor = ConsoleColor.Red;
+                    Console.WriteLine(input + ": Command Not Found");
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    break;
             }
+
         }
         public void PCinfoAPP()
         {
