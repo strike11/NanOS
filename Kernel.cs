@@ -19,7 +19,6 @@ namespace NanOS
 {
     public class Kernel : Sys.Kernel
     {
-        public Mouse m = new Mouse();
         public static Graphics gui;
         public static int Width;
         public static int Height;
@@ -150,6 +149,8 @@ namespace NanOS
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
                 case "sysinfo":
+                    ulong cpu_UPTIME = Cosmos.Core.CPU.GetCPUUptime();
+                    long CPU_cyclespeed = Cosmos.Core.CPU.GetCPUCycleSpeed();
                     string filesystemtype = fs.GetFileSystemType(@"0:\");            
                     //Доступно ОЗУ
                     ulong avialible_ram = Cosmos.Core.GCImplementation.GetAvailableRAM();
@@ -177,6 +178,20 @@ namespace NanOS
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
+                case "meminfo":
+                    amount_of_ram = Cosmos.Core.CPU.GetAmountOfRAM();
+                    avialible_ram = Cosmos.Core.GCImplementation.GetAvailableRAM();
+                    used_ram = Cosmos.Core.GCImplementation.GetUsedRAM();
+                    Console.WriteLine("Amount of RAM: " + amount_of_ram + " MB");
+                    Console.WriteLine("Avialible RAM: " + avialible_ram + " MB");
+                    Console.WriteLine("Used RAM: " + used_ram + " B");
+                    break;
+                case "cpuinfo":
+                    cpubrand = Cosmos.Core.CPU.GetCPUBrandString();
+                    CPU_vendorname = Cosmos.Core.CPU.GetCPUVendorName();
+                    Console.WriteLine("CPU: " + cpubrand);
+                    Console.WriteLine("CPU Vendor Name: " + CPU_vendorname);
+                    break;
                 case "help":
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("=============================");
@@ -202,7 +217,8 @@ namespace NanOS
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("whoami - Shows your user name\ndate - Shows the current date" +
                         "\nwritefile - Writes text to your file\nreadfile - Reads text from the selected file" +
-                        "\ncopyfile - Copies a file to the selected path\ncow - Draws a cow");
+                        "\ncopyfile - Copies a file to the selected path\ncow - Draws a cow" +
+                        "\nmeminfo - Shows information about RAM\ncpuinfo - Shows information about the processor");
                     break;
                 case "gfx on":
                     Console.Clear();
