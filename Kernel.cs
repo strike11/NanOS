@@ -100,14 +100,15 @@ namespace NanOS
         }
         protected override void Run()
         {
+            Console.WriteLine("[" + current_directory + "]");
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write("NanOS");
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("@{0}", username);
             Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.Write(" {0}>>> ", current_directory);
+            Console.Write(" >>> ");
             Console.ForegroundColor = ConsoleColor.White;
-            Commands();            
+            Commands();
         }
         public void Commands()
         {
@@ -118,7 +119,7 @@ namespace NanOS
             {
                 case "whoami":
                     Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine("I am {0}",username);
+                    Console.WriteLine("I am {0}", username);
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
                 case "date":
@@ -151,11 +152,11 @@ namespace NanOS
                 case "sysinfo":
                     ulong cpu_UPTIME = Cosmos.Core.CPU.GetCPUUptime();
                     long CPU_cyclespeed = Cosmos.Core.CPU.GetCPUCycleSpeed();
-                    string filesystemtype = fs.GetFileSystemType(@"0:\");            
+                    string filesystemtype = fs.GetFileSystemType(@"0:\");
                     //Доступно ОЗУ
                     ulong avialible_ram = Cosmos.Core.GCImplementation.GetAvailableRAM();
                     //Использованно ОЗУ
-                    uint used_ram =  Cosmos.Core.GCImplementation.GetUsedRAM();
+                    uint used_ram = Cosmos.Core.GCImplementation.GetUsedRAM();
                     //Получить vendorname (сам хз че это, но пусть будет)
                     string CPU_vendorname = Cosmos.Core.CPU.GetCPUVendorName();
                     // Оперативка
@@ -284,7 +285,7 @@ namespace NanOS
                     //Дата сверху
                     p1.X = 935;
                     p1.Y = 8;
-                    canvas.DrawString(""+day+"."+month+"."+year, Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pen, p1);
+                    canvas.DrawString("" + day + "." + month + "." + year, Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pen, p1);
                     p1.X = 943;
                     p1.Y = 20;
                     //Часы сверху
@@ -293,17 +294,17 @@ namespace NanOS
                     p1.Y = 13;
                     //Имя пользователя
                     canvas.DrawString("User: " + username, Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pen, p1);
-                     PCinfoAPP();
+                    PCinfoAPP();
 
                     canvas.Display();
                     break;
 
                 case "gfx off":
-                        Console.Clear();
-                        canvas.Disable();
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
-                        Console.WriteLine("                 Graphics mode is off. To enable write gfx.");
-                        Console.ForegroundColor = ConsoleColor.White;
+                    Console.Clear();
+                    canvas.Disable();
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.WriteLine("                 Graphics mode is off. To enable write gfx.");
+                    Console.ForegroundColor = ConsoleColor.White;
                     break;
 
                 case "beep":
@@ -343,7 +344,7 @@ namespace NanOS
                             Console.WriteLine("Error: Directory not found");
                             Console.WriteLine(e.ToString());
                         }
-                        
+
                     }
 
                     break;
@@ -376,7 +377,7 @@ namespace NanOS
                     {
                         Console.WriteLine("Error: NanOS.Directory.Not.Found");
                     }
-                    
+
                     break;
 
                 case "delfile":
@@ -398,7 +399,7 @@ namespace NanOS
                     Console.WriteLine("Welcome to NanOS writestr app!");
                     Console.WriteLine("Please enter file name!");
                     filename = Console.ReadLine();
-                    if (File.Exists(current_directory+filename))
+                    if (File.Exists(current_directory + filename))
                     {
                         Console.WriteLine("Write text");
                         var StringTXT = Console.ReadLine();
@@ -426,7 +427,7 @@ namespace NanOS
                     try
                     {
                         Console.WriteLine("---------------------------------------");
-                        Console.WriteLine("   "+filename);
+                        Console.WriteLine("   " + filename);
                         Console.WriteLine("---------------------------------------");
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine(File.ReadAllText(current_directory + filename));
@@ -465,11 +466,11 @@ namespace NanOS
                     newfilename = Console.ReadLine();
                     try
                     {
-                        File.Copy(current_directory + filename,current_directory + newfilename);
+                        File.Copy(current_directory + filename, current_directory + newfilename);
                         Console.WriteLine("File {0} renamed!", filename);
                         Sys.FileSystem.VFS.VFSManager.DeleteFile(current_directory + filename);
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Console.WriteLine(e.ToString());
                     }
@@ -492,7 +493,7 @@ namespace NanOS
                     //Получить размер диска
                     long total_size = fs.GetTotalSize(@"0:\");
                     //Свободное место
-                     available_space = Sys.FileSystem.VFS.VFSManager.GetAvailableFreeSpace(@"0:\");
+                    available_space = Sys.FileSystem.VFS.VFSManager.GetAvailableFreeSpace(@"0:\");
                     Console.WriteLine("Available Free Space: " + available_space + " B");
                     Console.WriteLine("Total size: " + total_size + " B");
                     Console.WriteLine("File System type: " + filesystemtype);
@@ -550,7 +551,7 @@ namespace NanOS
                     Console.WriteLine("NanOS_kernel_1. Core created May 4, 2022\nKernel.NanOS");
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
-                
+
 
                 case "catall":
                     var directory_list1 = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(current_directory);
@@ -607,7 +608,7 @@ namespace NanOS
             pointPCinfo.Y = 467;
             canvas.DrawFilledRectangle(pcinfopen, pointPCinfo, 400, 200);
             pcinfopen = new Pen(Color.Black);
-            canvas.DrawString("Processor: " + cpubrand,Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
+            canvas.DrawString("Processor: " + cpubrand, Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
             pointPCinfo.X = 105;
             pointPCinfo.Y = 487;
             canvas.DrawString("CPU Vendor: " + CPU_vendorname, Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
@@ -624,5 +625,5 @@ namespace NanOS
         }
 
     }
-    
+
 }
