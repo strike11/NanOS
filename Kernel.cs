@@ -19,23 +19,12 @@ namespace NanOS
 {
     public class Kernel : Sys.Kernel
     {
-        public static Graphics gui;
-        public static int Width;
-        public static int Height;
         public string osname = "NanOS";
         public string osversion = "1.0";
         public string kernelversion = "NanOS_kernel_1";
         public string boottype = "Live USB/CD";
         public string shellname = "nansh";
         public string username = "";
-        public static Bitmap settingsico;
-        public static Bitmap otherappsico;
-        public static Bitmap wallpaper;
-        public static Bitmap poweroffimg;
-        public static Bitmap consoleico;
-        public static Bitmap pcinfoico;
-        public static Bitmap appicon;
-        public Canvas canvas;
         byte year = Cosmos.HAL.RTC.Year;
         byte month = Cosmos.HAL.RTC.Month;
         byte day = Cosmos.HAL.RTC.DayOfTheMonth;
@@ -43,21 +32,6 @@ namespace NanOS
         byte Minutes = Cosmos.HAL.RTC.Minute;
         Sys.FileSystem.CosmosVFS fs;
         string current_directory = @"0:\";
-        //bmp картинки
-        [ManifestResourceStream(ResourceName = "NanOS.Wallpapers.wallpaper1.bmp")]
-        static byte[] wallpaperbyte;
-        [ManifestResourceStream(ResourceName = "NanOS.resources.poweroffAlpha.bmp")]
-        static byte[] powerofficon;
-        [ManifestResourceStream(ResourceName = "NanOS.resources.console.bmp")]
-        static byte[] consoleappicon;
-        [ManifestResourceStream(ResourceName = "NanOS.resources.pcinfoicon.bmp")]
-        static byte[] pcinfobye;
-        [ManifestResourceStream(ResourceName = "NanOS.resources.appicon.bmp")]
-        static byte[] appiconbyte;
-        [ManifestResourceStream(ResourceName = "NanOS.resources.settingsico.bmp")]
-        static byte[] settingsicobyte;
-        [ManifestResourceStream(ResourceName = "NanOS.resources.otherapps.bmp")]
-        static byte[] otherappsbyte;
         protected override void BeforeRun()
         {
             Console.Clear();
@@ -83,24 +57,27 @@ namespace NanOS
             Console.WriteLine("             Welcome to NanOS {0}. Press any key to get started!", username);
             Console.ReadKey();
             Console.Clear();
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine(@"               ::::    :::     :::     ::::    :::  ::::::::   :::::::: 
-              :+:+:   :+:   :+: :+:   :+:+:   :+: :+:    :+: :+:    :+: 
-             :+:+:+  +:+  +:+   +:+  :+:+:+  +:+ +:+    +:+ +:+         
-            +#+ +:+ +#+ +#++:++#++: +#+ +:+ +#+ +#+    +:+ +#++:++#++   
-           +#+  +#+#+# +#+     +#+ +#+  +#+#+# +#+    +#+        +#+    
-          #+#   #+#+# #+#     #+# #+#   #+#+# #+#    #+# #+#    #+#     
-         ###    #### ###     ### ###    ####  ########   ########       ");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(@"
+              $$\   $$\                      $$$$$$\   $$$$$$\  
+              $$$\  $$ |                    $$  __$$\ $$  __$$\ 
+              $$$$\ $$ | $$$$$$\  $$$$$$$\  $$ /  $$ |$$ /  \__|
+              $$ $$\$$ | \____$$\ $$  __$$\ $$ |  $$ |\$$$$$$\  
+              $$ \$$$$ | $$$$$$$ |$$ |  $$ |$$ |  $$ | \____$$\ 
+              $$ |\$$$ |$$  __$$ |$$ |  $$ |$$ |  $$ |$$\   $$ |
+              $$ | \$$ |\$$$$$$$ |$$ |  $$ | $$$$$$  |\$$$$$$  |
+              \__|  \__| \_______|\__|  \__| \______/  \______/ 
+                                                                                 ");
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine("                        ------------------------------");
             Console.WriteLine("                        Type help to show command list");
             Console.WriteLine("                        ------------------------------");
             Console.ForegroundColor = ConsoleColor.White;
-
+            //               
         }
         protected override void Run()
         {
-            Console.WriteLine("[" + current_directory + "]");
+         //   Console.WriteLine("[" + current_directory + "]");
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write("NanOS");
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -206,7 +183,7 @@ namespace NanOS
                         "\ngfx on - Enables graphics mode" +
                         "\ngfx off - Disables graphics mode\ndiskinfo - Shows disk information\nmkdir - Creates a directory\n" +
                         "mkfile - Creates a file\ncd - Change Directory\ndeldir - Delete a directory\ndelfile - Delete a file" +
-                        "\nhelp2 - Shows the second page of commands");
+                        "\ncdir - Shows current directory\nhelp2 - Shows the second page of commands");
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
                 case "help2":
@@ -221,92 +198,6 @@ namespace NanOS
                         "\ncopyfile - Copies a file to the selected path\ncow - Draws a cow" +
                         "\nmeminfo - Shows information about RAM\ncpuinfo - Shows information about the processor");
                     break;
-                case "gfx on":
-                    Console.Clear();
-                    cpubrand = Cosmos.Core.CPU.GetCPUBrandString();
-                    Point p1 = new Point();
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("[ NanOS.nansh ] Loading the basic VideoDriver");
-                    Console.WriteLine("[ NanOS.nansh ] Desktop loading");
-                    wallpaper = new Bitmap(wallpaperbyte);
-                    Console.WriteLine("[ NanOS.nansh ] Loading GUI Elements...");
-                    otherappsico = new Bitmap(otherappsbyte);
-                    settingsico = new Bitmap(settingsicobyte);
-                    appicon = new Bitmap(appiconbyte);
-                    pcinfoico = new Bitmap(pcinfobye);
-                    poweroffimg = new Bitmap(powerofficon);
-                    consoleico = new Bitmap(consoleappicon);
-                    Pen penmouse = new Pen(Color.Red);
-                    Console.WriteLine("[ NanOS.nansh ] Loaded!");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.Clear();
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("                     WARNING! Graphics mode is in testing!" +
-                        "\n                 If you want to turn it off, just type gfx off!" +
-                        " \n                Please write the width and height of the screen.");
-                    Console.WriteLine("");
-                    Console.Write("Width: ");
-                    Width = Convert.ToInt32(Console.ReadLine());
-                    Console.WriteLine("");
-                    Console.Write("Height: ");
-                    Height = Convert.ToInt32(Console.ReadLine());
-                    Console.WriteLine("");
-                    Console.WriteLine("This is right?\n" + Width + "x" + Height);
-                    Console.WriteLine("Press any key to continue");
-                    Console.ReadKey();
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.ReadKey();
-                    Sys.PCSpeaker.Beep();
-                    canvas = FullScreenCanvas.GetFullScreenCanvas(new Mode(Width, Height, ColorDepth.ColorDepth32));
-                    Pen pen = new Pen(Color.Red);
-                    canvas.Clear(Color.FromArgb(41, 51, 64));
-                    canvas.DrawImage(wallpaper, 0, 0);
-                    pen.Color = Color.FromArgb(7, 71, 94);
-                    //Верхняя белая линия
-                    canvas.DrawFilledRectangle(pen, 0, 0, 1920, 40);
-                    pen.Color = Color.FromArgb(23, 53, 89);
-                    //Нижняя линия для приложений
-                    canvas.DrawFilledRectangle(pen, 740, 1048, 450, 200);
-                    //Картинка выключения
-                    canvas.DrawImageAlpha(poweroffimg, 1880, 8);
-                    //Картинки приложений снизу
-                    canvas.DrawImage(consoleico, 758, 1020);
-                    canvas.DrawImage(appicon, 830, 1020);
-                    canvas.DrawImageAlpha(pcinfoico, 902, 1020);
-                    canvas.DrawImageAlpha(settingsico, 974, 1020);
-                    canvas.DrawImageAlpha(otherappsico, 1120, 1020);
-                    //Получить время
-                    year = Cosmos.HAL.RTC.Year;
-                    month = Cosmos.HAL.RTC.Month;
-                    day = Cosmos.HAL.RTC.DayOfTheMonth;
-                    hour = Cosmos.HAL.RTC.Hour;
-                    Minutes = Cosmos.HAL.RTC.Minute;
-                    pen.Color = Color.White;
-                    //Дата сверху
-                    p1.X = 935;
-                    p1.Y = 8;
-                    canvas.DrawString("" + day + "." + month + "." + year, Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pen, p1);
-                    p1.X = 943;
-                    p1.Y = 20;
-                    //Часы сверху
-                    canvas.DrawString("" + hour + ":" + Minutes, Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pen, p1);
-                    p1.X = 38;
-                    p1.Y = 13;
-                    //Имя пользователя
-                    canvas.DrawString("User: " + username, Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pen, p1);
-                    PCinfoAPP();
-
-                    canvas.Display();
-                    break;
-
-                case "gfx off":
-                    Console.Clear();
-                    canvas.Disable();
-                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.WriteLine("                 Graphics mode is off. To enable write gfx.");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    break;
-
                 case "beep":
                     Sys.PCSpeaker.Beep();
                     break;
@@ -320,6 +211,7 @@ namespace NanOS
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
                 case "dir":
+                    Console.WriteLine("Current Directory: " + current_directory);
                     var directory_list = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(current_directory);
                     foreach (var directoryEntry in directory_list)
                     {
@@ -329,13 +221,13 @@ namespace NanOS
                             if (entry_type == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.File)
                             {
                                 Console.ForegroundColor = ConsoleColor.Magenta;
-                                Console.WriteLine(directoryEntry.mName + "                         <FILE>");
+                                Console.WriteLine(" <File>       " + directoryEntry.mName);
                                 Console.ForegroundColor = ConsoleColor.White;
                             }
                             if (entry_type == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.Directory)
                             {
                                 Console.ForegroundColor = ConsoleColor.Blue;
-                                Console.WriteLine(directoryEntry.mName + "                         <DIRECTORY>");
+                                Console.WriteLine(" <Directory>      "+ directoryEntry.mName);
                                 Console.ForegroundColor = ConsoleColor.White;
                             }
                         }
@@ -346,7 +238,9 @@ namespace NanOS
                         }
 
                     }
-
+                    break;
+                case "cdir":
+                    Console.WriteLine("Current Directory: " + current_directory);
                     break;
                 case "mkdir":
                     Console.WriteLine("Enter Directory name");
@@ -590,40 +484,6 @@ namespace NanOS
             }
 
         }
-        public void PCinfoAPP()
-        {
-            //Доступно ОЗУ
-            ulong avialible_ram = Cosmos.Core.GCImplementation.GetAvailableRAM();
-            //Использованно ОЗУ
-            uint used_ram = Cosmos.Core.GCImplementation.GetUsedRAM();
-            //Получить vendorname (сам хз че это, но пусть будет)
-            string CPU_vendorname = Cosmos.Core.CPU.GetCPUVendorName();
-            // Оперативка
-            uint amount_of_ram = Cosmos.Core.CPU.GetAmountOfRAM();
-            // Название процессора
-            string cpubrand = Cosmos.Core.CPU.GetCPUBrandString();
-            Point pointPCinfo = new Point();
-            Pen pcinfopen = new Pen(Color.White);
-            pointPCinfo.X = 105;
-            pointPCinfo.Y = 467;
-            canvas.DrawFilledRectangle(pcinfopen, pointPCinfo, 400, 200);
-            pcinfopen = new Pen(Color.Black);
-            canvas.DrawString("Processor: " + cpubrand, Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
-            pointPCinfo.X = 105;
-            pointPCinfo.Y = 487;
-            canvas.DrawString("CPU Vendor: " + CPU_vendorname, Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
-            pointPCinfo.X = 105;
-            pointPCinfo.Y = 507;
-            canvas.DrawString("RAM : " + amount_of_ram + "MB", Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
-            pointPCinfo.X = 105;
-            pointPCinfo.Y = 527;
-            canvas.DrawString("Avialible RAM : " + avialible_ram + "MB", Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
-            pointPCinfo.X = 105;
-            pointPCinfo.Y = 547;
-            canvas.DrawString("Used RAM : " + used_ram + "B", Cosmos.System.Graphics.Fonts.PCScreenFont.Default, pcinfopen, pointPCinfo);
-            canvas.Display();
-        }
-
     }
 
 }
