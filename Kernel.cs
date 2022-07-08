@@ -30,13 +30,13 @@ namespace NanOS
         byte day = Cosmos.HAL.RTC.DayOfTheMonth;
         byte hour = Cosmos.HAL.RTC.Hour;
         byte Minutes = Cosmos.HAL.RTC.Minute;
-      //  Sys.FileSystem.CosmosVFS fs;
+        Sys.FileSystem.CosmosVFS fs;
         string current_directory = @"0:\";
         protected override void BeforeRun()
         {
             ConsoleClear();
-            //fs = new Sys.FileSystem.CosmosVFS();
-           // Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
+            fs = new Sys.FileSystem.CosmosVFS();
+            Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
             Console.WriteLine("LOADING NanOS_kernel_1");
             Console.WriteLine("[ NanOS.nansh ] Kernel Loaded! ");
             ConsoleClear();
@@ -127,7 +127,7 @@ namespace NanOS
                 case "sysinfo":
                     ulong cpu_UPTIME = Cosmos.Core.CPU.GetCPUUptime();
                     long CPU_cyclespeed = Cosmos.Core.CPU.GetCPUCycleSpeed();
-                    //string filesystemtype = fs.GetFileSystemType(@"0:\");
+                    string filesystemtype = fs.GetFileSystemType(@"0:\");
                     //Доступно ОЗУ
                     ulong avialible_ram = Cosmos.Core.GCImplementation.GetAvailableRAM();
                     //Использованно ОЗУ
@@ -242,13 +242,13 @@ namespace NanOS
                 case "mkdir":
                     Console.WriteLine("Enter Directory name");
                     var dirname = Console.ReadLine();
-                    //fs.CreateDirectory(current_directory + dirname);
+                    fs.CreateDirectory(current_directory + dirname);
                     Console.WriteLine("Directory {0} created in {1}", dirname, current_directory);
                     break;
                 case "mkfile":
                     Console.WriteLine("Enter file name");
                     var filename = Console.ReadLine();
-                   // fs.CreateFile(current_directory + filename);
+                    fs.CreateFile(current_directory + filename);
                     Console.WriteLine("File {0} created in {1}", filename, current_directory);
                     break;
                 case "deldir":
