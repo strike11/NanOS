@@ -30,17 +30,16 @@ namespace NanOS
         byte day = Cosmos.HAL.RTC.DayOfTheMonth;
         byte hour = Cosmos.HAL.RTC.Hour;
         byte Minutes = Cosmos.HAL.RTC.Minute;
-        Sys.FileSystem.CosmosVFS fs;
+      //  Sys.FileSystem.CosmosVFS fs;
         string current_directory = @"0:\";
         protected override void BeforeRun()
         {
-            Console.Clear();
-            fs = new Sys.FileSystem.CosmosVFS();
-            Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
+            ConsoleClear();
+            //fs = new Sys.FileSystem.CosmosVFS();
+           // Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
             Console.WriteLine("LOADING NanOS_kernel_1");
-            Console.WriteLine("[ NanOS.nansh ] Creating System directory ");
-            Console.WriteLine("[ NanOS.nansh ] Creating Users directory ");
-            Console.Clear();
+            Console.WriteLine("[ NanOS.nansh ] Kernel Loaded! ");
+            ConsoleClear();
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.WriteLine(@"                    NN   NN   AAA   NN   NN  OOOOO   SSSSS  
                     NNN  NN  AAAAA  NNN  NN OO   OO SS      
@@ -56,7 +55,7 @@ namespace NanOS
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine("             Welcome to NanOS {0}. Press any key to get started!", username);
             Console.ReadKey();
-            Console.Clear();
+            ConsoleClear();
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(@"
               $$\   $$\                      $$$$$$\   $$$$$$\  
@@ -77,7 +76,6 @@ namespace NanOS
         }
         protected override void Run()
         {
-         //   Console.WriteLine("[" + current_directory + "]");
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write("NanOS");
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -129,7 +127,7 @@ namespace NanOS
                 case "sysinfo":
                     ulong cpu_UPTIME = Cosmos.Core.CPU.GetCPUUptime();
                     long CPU_cyclespeed = Cosmos.Core.CPU.GetCPUCycleSpeed();
-                    string filesystemtype = fs.GetFileSystemType(@"0:\");
+                    //string filesystemtype = fs.GetFileSystemType(@"0:\");
                     //Доступно ОЗУ
                     ulong avialible_ram = Cosmos.Core.GCImplementation.GetAvailableRAM();
                     //Использованно ОЗУ
@@ -177,11 +175,10 @@ namespace NanOS
                     Console.WriteLine("     :::::Page 1:::::");
                     Console.WriteLine("=============================");
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("restart - restart pc\nshutdown - Kills all processes and prepares your PC for shutdown" +
+                    Console.WriteLine("reboot - restart pc\nshutdown - Kills all processes and prepares your PC for shutdown" +
                         "\nhelp - Shows a list of commands\nclear - Clears all text from the screen\nsysinfo - Shows system information\n" +
                         "kernel - Shows info about the kernel\nbeep - Tests your PC Speaker\nchngeuname - Changes your username" +
-                        "\ngfx on - Enables graphics mode" +
-                        "\ngfx off - Disables graphics mode\ndiskinfo - Shows disk information\nmkdir - Creates a directory\n" +
+                        "diskinfo - Shows disk information\nmkdir - Creates a directory\n" +
                         "mkfile - Creates a file\ncd - Change Directory\ndeldir - Delete a directory\ndelfile - Delete a file" +
                         "\ncdir - Shows current directory\nhelp2 - Shows the second page of commands");
                     Console.ForegroundColor = ConsoleColor.White;
@@ -245,13 +242,13 @@ namespace NanOS
                 case "mkdir":
                     Console.WriteLine("Enter Directory name");
                     var dirname = Console.ReadLine();
-                    fs.CreateDirectory(current_directory + dirname);
+                    //fs.CreateDirectory(current_directory + dirname);
                     Console.WriteLine("Directory {0} created in {1}", dirname, current_directory);
                     break;
                 case "mkfile":
                     Console.WriteLine("Enter file name");
                     var filename = Console.ReadLine();
-                    fs.CreateFile(current_directory + filename);
+                   // fs.CreateFile(current_directory + filename);
                     Console.WriteLine("File {0} created in {1}", filename, current_directory);
                     break;
                 case "deldir":
@@ -373,24 +370,24 @@ namespace NanOS
                     string dirtomove;
                     Console.WriteLine("Enter file name");
                     filename = Console.ReadLine();
-                    Console.WriteLine("Enter dir");
+                    Console.WriteLine("Enter directoey");
                     Console.Write(@"0:\");
                     dirtomove = @"0:\" + Console.ReadLine();
                     File.Copy(current_directory + filename, dirtomove + filename);
                     Sys.FileSystem.VFS.VFSManager.DeleteFile(current_directory + filename);
                     break;
                 case "diskinfo":
-                    fs.GetDisks();
+                    //fs.GetDisks();
                     //Получить тип файловой системы
                     long available_space = Sys.FileSystem.VFS.VFSManager.GetAvailableFreeSpace(@"0:\");
-                    filesystemtype = fs.GetFileSystemType(@"0:\");
+                    //filesystemtype = fs.GetFileSystemType(@"0:\");
                     //Получить размер диска
-                    long total_size = fs.GetTotalSize(@"0:\");
+                   // long total_size = fs.GetTotalSize(@"0:\");
                     //Свободное место
                     available_space = Sys.FileSystem.VFS.VFSManager.GetAvailableFreeSpace(@"0:\");
                     Console.WriteLine("Available Free Space: " + available_space + " B");
-                    Console.WriteLine("Total size: " + total_size + " B");
-                    Console.WriteLine("File System type: " + filesystemtype);
+                    //Console.WriteLine("Total size: " + total_size + " B");
+                    //Console.WriteLine("File System type: " + filesystemtype);
                     break;
                 case "cd":
                     //Смена директорий
@@ -424,7 +421,7 @@ namespace NanOS
                 case " ":
                     Console.WriteLine("");
                     break;
-                case "restart":
+                case "reboot":
                     Cosmos.System.Power.Reboot();
                     break;
                 case "shutdown":
@@ -432,7 +429,7 @@ namespace NanOS
                     Console.WriteLine("Now you can power-off your PC!");
                     break;
                 case "clear":
-                    Console.Clear();
+                    ConsoleClear();
                     break;
                 case "kernel":
                     Console.WriteLine("kernel -i Shows the kernel version\nkernel -a Shows all information about the kernel");
@@ -483,6 +480,19 @@ namespace NanOS
                     break;
             }
 
+        }
+        public void ConsoleClear()
+        {
+            year = Cosmos.HAL.RTC.Year;
+            month = Cosmos.HAL.RTC.Month;
+            day = Cosmos.HAL.RTC.DayOfTheMonth;
+            hour = Cosmos.HAL.RTC.Hour;
+            Minutes = Cosmos.HAL.RTC.Minute;
+            Console.Clear();
+            Console.BackgroundColor = ConsoleColor.DarkCyan;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(" NanOS                                                          {0}.{1}.{2}   {3}:{4}",day,month,year,hour,Minutes);
+            Console.BackgroundColor = ConsoleColor.Black;
         }
     }
 
