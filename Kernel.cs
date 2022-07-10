@@ -52,6 +52,10 @@ namespace NanOS
             Console.Write("Username: ");
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             username = Console.ReadLine();
+           if(username == "")
+            {
+                username = "userNanOS";
+            }
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine("             Welcome to NanOS {0}. Press any key to get started!", username);
             Console.ReadKey();
@@ -65,8 +69,7 @@ namespace NanOS
               $$ \$$$$ | $$$$$$$ |$$ |  $$ |$$ |  $$ | \____$$\ 
               $$ |\$$$ |$$  __$$ |$$ |  $$ |$$ |  $$ |$$\   $$ |
               $$ | \$$ |\$$$$$$$ |$$ |  $$ | $$$$$$  |\$$$$$$  |
-              \__|  \__| \_______|\__|  \__| \______/  \______/ 
-                                                                                 ");
+              \__|  \__| \_______|\__|  \__| \______/  \______/ ");
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine("                        ------------------------------");
             Console.WriteLine("                        Type help to show command list");
@@ -125,8 +128,11 @@ namespace NanOS
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
                 case "sysinfo":
-                    ulong cpu_UPTIME = Cosmos.Core.CPU.GetCPUUptime();
-                    long CPU_cyclespeed = Cosmos.Core.CPU.GetCPUCycleSpeed();
+                    year = Cosmos.HAL.RTC.Year;
+                    month = Cosmos.HAL.RTC.Month;
+                    day = Cosmos.HAL.RTC.DayOfTheMonth;
+                    hour = Cosmos.HAL.RTC.Hour;
+                    Minutes = Cosmos.HAL.RTC.Minute;
                     string filesystemtype = fs.GetFileSystemType(@"0:\");
                     //Доступно ОЗУ
                     ulong avialible_ram = Cosmos.Core.GCImplementation.GetAvailableRAM();
@@ -140,17 +146,23 @@ namespace NanOS
                     string cpubrand = Cosmos.Core.CPU.GetCPUBrandString();
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.BackgroundColor = ConsoleColor.DarkGray;
-                    Console.WriteLine("OS NAME: " + osname);
-                    Console.WriteLine("OS VERSION: " + osversion);
-                    Console.WriteLine("KERNEL VERSION: " + kernelversion);
-                    Console.WriteLine("BOOT TYPE: " + boottype);
-                    Console.WriteLine("SHELL: " + shellname);
-                    Console.WriteLine("CURRENT USER: " + username);
-                    Console.WriteLine("CPU: " + cpubrand);
-                    Console.WriteLine("CPU Vendor Name: " + CPU_vendorname);
-                    Console.WriteLine("Amount of RAM: " + amount_of_ram + " MB");
-                    Console.WriteLine("Avialible RAM: " + avialible_ram + " MB");
-                    Console.WriteLine("Used RAM: " + used_ram + " B");
+                    Console.WriteLine(@"               :!!!:               OS NAME: {0}
+             .7YJYY57.             OS VERSION: {1}
+         .^7JYYJJJJYYYY!..         KERNEL: {2}
+   .^^^!?JJJJ?!?JJY?!JY5YYJ!^^^.   SHELL: {3}
+  .Y?????Y?^.  :JJY:  .^J5YY555P.  USER: {4}
+  .J777??J?~:. ~J?J~ .:!J5YYYYYY   CPU: {5}
+   .J77J!?JJJJ?J???JJJYYYJ7YYY5.   CPU VENDOR: {6}
+   .?77!  .^?????????JJ^.  7YJ5    AMOUNT OF RAM: {7} MB
+   .?!7!  .^?????????J?^.  7JJY    AVIALIBLE RAM: {8} MB
+   .?!7J!7?????????JJJJJJJ7YJJY.   USED RAM: {9} B
+  .?!!!77?7~:  ~?7J~  :!?YJJJJJY   
+  .J7!77!J7^.  :?7J:  .^?Y?JJJJ5.  
+   .::^~7777?7~7?7?7!?JJJJ?!^^^.   
+         .:!7?77777??J?!^.         
+             .!?777J!.             
+               :~~~:               ", osname,osversion,kernelversion,shellname,username,cpubrand,CPU_vendorname,amount_of_ram,avialible_ram,used_ram,
+               current_directory);
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
@@ -218,13 +230,13 @@ namespace NanOS
                             if (entry_type == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.File)
                             {
                                 Console.ForegroundColor = ConsoleColor.Magenta;
-                                Console.WriteLine(" <File>       " + directoryEntry.mName);
+                                Console.WriteLine("| <File>       " + directoryEntry.mName);
                                 Console.ForegroundColor = ConsoleColor.White;
                             }
                             if (entry_type == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.Directory)
                             {
                                 Console.ForegroundColor = ConsoleColor.Blue;
-                                Console.WriteLine(" <Directory>      "+ directoryEntry.mName);
+                                Console.WriteLine("| <Directory>      " + directoryEntry.mName);
                                 Console.ForegroundColor = ConsoleColor.White;
                             }
                         }
@@ -442,8 +454,6 @@ namespace NanOS
                     Console.WriteLine("NanOS_kernel_1. Core created May 4, 2022\nKernel.NanOS");
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
-
-
                 case "catall":
                     var directory_list1 = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(current_directory);
                     try
@@ -493,6 +503,7 @@ namespace NanOS
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(" NanOS                                                          {0}.{1}.{2}   {3}:{4}",day,month,year,hour,Minutes);
             Console.BackgroundColor = ConsoleColor.Black;
+            Console.WriteLine("");
         }
     }
 
