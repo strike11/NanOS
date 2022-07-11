@@ -9,8 +9,6 @@ using Cosmos.System.FileSystem.VFS;
 using Cosmos.System.FileSystem;
 using System.Drawing;
 using IL2CPU.API.Attribs;
-using NanOS.GUI.Graphics;
-using NanOS.Commands;
 using NanOS;
 using Cosmos.HAL.Network;
 using Cosmos.Core.IOGroup;
@@ -70,6 +68,8 @@ namespace NanOS
               $$ |\$$$ |$$  __$$ |$$ |  $$ |$$ |  $$ |$$\   $$ |
               $$ | \$$ |\$$$$$$$ |$$ |  $$ | $$$$$$  |\$$$$$$  |
               \__|  \__| \_______|\__|  \__| \______/  \______/ ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("                       Visit our website: www.nanos.tk");
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine("                        ------------------------------");
             Console.WriteLine("                        Type help to show command list");
@@ -451,7 +451,7 @@ namespace NanOS
                     break;
                 case "kernel -a":
                     Console.ForegroundColor = ConsoleColor.DarkGreen;
-                    Console.WriteLine("NanOS_kernel_1. Core created May 4, 2022\nKernel.NanOS");
+                    Console.WriteLine("NanOS_kernel_1. Kernel created May 4, 2022\nKernel.NanOS");
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
                 case "catall":
