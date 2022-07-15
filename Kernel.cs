@@ -48,9 +48,9 @@ namespace NanOS
             {
                 fs = new Sys.FileSystem.CosmosVFS();
                 Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
-                fs.CreateDirectory(@"0:\TestDIRECTORY");
-                Directory.Exists(@"0:\TestDIRECTORY");
-                Sys.FileSystem.VFS.VFSManager.DeleteDirectory(current_directory + "TestDIRECTORY", true);
+                fs.CreateDirectory(@"0:\FileSystemInitialization");
+                Directory.Exists(@"0:\FileSystemInitialization");
+                Sys.FileSystem.VFS.VFSManager.DeleteDirectory(current_directory + "FileSystemInitialization", true);
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("[ OK ] File System Initialization");
                 Console.ForegroundColor = ConsoleColor.White;
@@ -191,7 +191,6 @@ namespace NanOS
                     day = Cosmos.HAL.RTC.DayOfTheMonth;
                     hour = Cosmos.HAL.RTC.Hour;
                     Minutes = Cosmos.HAL.RTC.Minute;
-                    string filesystemtype = fs.GetFileSystemType(@"0:\");
                     //Доступно ОЗУ
                     ulong avialible_ram = Cosmos.Core.GCImplementation.GetAvailableRAM();
                     //Использованно ОЗУ
@@ -204,16 +203,16 @@ namespace NanOS
                     string cpubrand = Cosmos.Core.CPU.GetCPUBrandString();
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.BackgroundColor = ConsoleColor.DarkGray;
-                    Console.WriteLine(@"               :!!!:               OS NAME: {0}
-             .7YJYY57.             OS VERSION: {1}
-         .^7JYYJJJJYYYY!..         KERNEL: {2}
-   .^^^!?JJJJ?!?JJY?!JY5YYJ!^^^.   SHELL: {3}
-  .Y?????Y?^.  :JJY:  .^J5YY555P.  USER: {4}
-  .J777??J?~:. ~J?J~ .:!J5YYYYYY   CPU: {5}
-   .J77J!?JJJJ?J???JJJYYYJ7YYY5.   CPU VENDOR: {6}
-   .?77!  .^?????????JJ^.  7YJ5    AMOUNT OF RAM: {7} MB
-   .?!7!  .^?????????J?^.  7JJY    AVIALIBLE RAM: {8} MB
-   .?!7J!7?????????JJJJJJJ7YJJY.   USED RAM: {9} B
+                    Console.WriteLine(@"               :!!!:              OS NAME: {0}
+             .7YJYY57.            OS VERSION: {1}
+         .^7JYYJJJJYYYY!..        KERNEL: {2}
+   .^^^!?JJJJ?!?JJY?!JY5YYJ!^^^.  SHELL: {3}
+  .Y?????Y?^.  :JJY:  .^J5YY555P. USER: {4}
+  .J777??J?~:. ~J?J~ .:!J5YYYYYY  CPU: {5}
+   .J77J!?JJJJ?J???JJJYYYJ7YYY5.  CPU VENDOR: {6}
+   .?77!  .^?????????JJ^.  7YJ5   AMOUNT OF RAM: {7} MB
+   .?!7!  .^?????????J?^.  7JJY   AVIALIBLE RAM: {8} MB
+   .?!7J!7?????????JJJJJJJ7YJJY.  USED RAM: {9} B
   .?!!!77?7~:  ~?7J~  :!?YJJJJJY   
   .J7!77!J7^.  :?7J:  .^?Y?JJJJ5.  
    .::^~7777?7~7?7?7!?JJJJ?!^^^.   
@@ -224,7 +223,7 @@ namespace NanOS
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
-                case "meminfo":
+                case "raminfo":
                     amount_of_ram = Cosmos.Core.CPU.GetAmountOfRAM();
                     avialible_ram = Cosmos.Core.GCImplementation.GetAvailableRAM();
                     used_ram = Cosmos.Core.GCImplementation.GetUsedRAM();
@@ -263,7 +262,7 @@ namespace NanOS
                     Console.WriteLine("whoami - Shows your user name\ndate - Shows the current date" +
                         "\nwritefile - Writes text to your file\nreadfile - Reads text from the selected file" +
                         "\ncopyfile - Copies a file to the selected path\ncow - Draws a cow" +
-                        "\nmeminfo - Shows information about RAM\ncpuinfo - Shows information about the processor");
+                        "\nraminfo - Shows information about RAM\ncpuinfo - Shows information about the processor");
                     break;
                 case "beep":
                     Sys.PCSpeaker.Beep();
@@ -511,14 +510,12 @@ namespace NanOS
                     try
                     {
                         long available_space = Sys.FileSystem.VFS.VFSManager.GetAvailableFreeSpace(@"0:\");
-                        filesystemtype = fs.GetFileSystemType(@"0:\");
                         //Получить размер диска
                         long total_size = fs.GetTotalSize(@"0:\");
                         //Свободное место
                         available_space = Sys.FileSystem.VFS.VFSManager.GetAvailableFreeSpace(@"0:\");
                         Console.WriteLine("Available Free Space: " + available_space + " B");
                         Console.WriteLine("Total size: " + total_size + " B");
-                        Console.WriteLine("File System type: " + filesystemtype);
                     }
                     catch(Exception ex)
                     {
