@@ -29,7 +29,8 @@ namespace NanOS
         byte hour = Cosmos.HAL.RTC.Hour;
         byte Minutes = Cosmos.HAL.RTC.Minute;
         Sys.FileSystem.CosmosVFS fs;
-        string current_directory = @"0:\";
+        string current_directory = @"cdir.empty";
+        //В СЛУЧАЕ ОШИБКИ string current_directory = @"0:\";
         protected override void BeforeRun()
         {
             Console.WriteLine("[ NanOS.nansh ] Kernel Loaded! ");
@@ -50,8 +51,9 @@ namespace NanOS
                 Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
                 fs.CreateDirectory(@"0:\FileSystemInitialization");
                 Directory.Exists(@"0:\FileSystemInitialization");
-                Sys.FileSystem.VFS.VFSManager.DeleteDirectory(current_directory + "FileSystemInitialization", true);
+                Sys.FileSystem.VFS.VFSManager.DeleteDirectory(@"0:\FileSystemInitialization", true);
                 Console.ForegroundColor = ConsoleColor.Green;
+                current_directory = @"0:\";
                 Console.WriteLine("[ OK ] File System Initialization");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("[ NanOS.nansh ] Press Any Key To Continue");
@@ -62,7 +64,7 @@ namespace NanOS
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("[ ERROR ] File System Initialization");
                 Console.ForegroundColor = ConsoleColor.White;
-            label:
+            gtchoose:
                 Console.WriteLine("Continue without a file system? Y - Yes N - No");
                 string chooseYN = Console.ReadLine();
                 switch (chooseYN)
@@ -83,7 +85,7 @@ namespace NanOS
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("[ ERROR ] You entered the wrong letter!");
                         Console.ForegroundColor = ConsoleColor.White;
-                        goto label;
+                        goto gtchoose;
                         break;
                 }
             }
