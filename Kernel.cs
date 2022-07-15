@@ -18,7 +18,7 @@ namespace NanOS
     public class Kernel : Sys.Kernel
     {
         public string osname = "NanOS";
-        public string osversion = "1.0";
+        public string osversion = "1.1";
         public string kernelversion = "NanOS_kernel_1";
         public string boottype = "Live USB/CD";
         public string shellname = "nansh";
@@ -33,8 +33,45 @@ namespace NanOS
         protected override void BeforeRun()
         {
             ConsoleClear();
-            fs = new Sys.FileSystem.CosmosVFS();
-            Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
+            Console.WriteLine("[ NanOS.nansh ] Getting information about the time");
+            year = Cosmos.HAL.RTC.Year;
+            month = Cosmos.HAL.RTC.Month;
+            day = Cosmos.HAL.RTC.DayOfTheMonth;
+            hour = Cosmos.HAL.RTC.Hour;
+            Minutes = Cosmos.HAL.RTC.Minute;
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("[ OK ] Getting information about the time");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("[ NanOS.nansh ] File System Initialization");
+            try
+            {
+                fs = new Sys.FileSystem.CosmosVFS();
+                Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
+                fs.CreateDirectory(@"0:\TestDIRECTORY");
+                Directory.Exists(@"0:\TestDIRECTORY");
+                Sys.FileSystem.VFS.VFSManager.DeleteDirectory(current_directory + "TestDIRECTORY", true);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("[ OK ] File System Initialization");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("[ NanOS.nansh ] Press Any Key To Continue");
+                Console.ReadKey();
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("[ ERROR ] File System Initialization");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("Continue without a file system? Y - Yes N - No");
+                string choose = Console.ReadLine();
+                if(choose == "Y")
+                {
+                    Console.WriteLine("[ NanOS.nansh ] Attention! The OS works without a file system!");
+                }
+                else if(choose == "N")
+                {
+                    Cosmos.System.Power.Reboot();
+                }
+            }
             Console.WriteLine("LOADING NanOS_kernel_1");
             Console.WriteLine("[ NanOS.nansh ] Kernel Loaded! ");
             ConsoleClear();
@@ -52,10 +89,17 @@ namespace NanOS
             username = Console.ReadLine();
            if(username == "")
             {
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine("          You didn't provide a username. You will continue as userNanOS");
+                Console.ForegroundColor = ConsoleColor.White;
                 username = "userNanOS";
             }
-            Console.ForegroundColor = ConsoleColor.Gray;
-            Console.WriteLine("             Welcome to NanOS {0}. Press any key to get started!", username);
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine("             Welcome to NanOS {0}. Press any key to get started!", username);
+                Console.ForegroundColor = ConsoleColor.White;
+            }
             Console.ReadKey();
             ConsoleClear();
             Console.ForegroundColor = ConsoleColor.White;
@@ -69,7 +113,8 @@ namespace NanOS
               $$ | \$$ |\$$$$$$$ |$$ |  $$ | $$$$$$  |\$$$$$$  |
               \__|  \__| \_______|\__|  \__| \______/  \______/ ");
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("                       Visit our website: www.nanos.tk");
+            Console.WriteLine("\n                        Visit our website: www.nanos.tk" +
+                "\n");
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine("                        ------------------------------");
             Console.WriteLine("                        Type help to show command list");
@@ -189,7 +234,7 @@ namespace NanOS
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("reboot - restart pc\nshutdown - Kills all processes and prepares your PC for shutdown" +
                         "\nhelp - Shows a list of commands\nclear - Clears all text from the screen\nsysinfo - Shows system information\n" +
-                        "kernel - Shows info about the kernel\nbeep - Tests your PC Speaker\nchngeuname - Changes your username" +
+                        "kernel - Shows info about the kernel\nbeep - Tests your PC Speaker\nchngeuname - Changes your username\n" +
                         "diskinfo - Shows disk information\nmkdir - Creates a directory\n" +
                         "mkfile - Creates a file\ncd - Change Directory\ndeldir - Delete a directory\ndelfile - Delete a file" +
                         "\ncdir - Shows current directory\nhelp2 - Shows the second page of commands");
@@ -389,7 +434,6 @@ namespace NanOS
                     Sys.FileSystem.VFS.VFSManager.DeleteFile(current_directory + filename);
                     break;
                 case "diskinfo":
-                    //fs.GetDisks();
                     //Получить тип файловой системы
                     long available_space = Sys.FileSystem.VFS.VFSManager.GetAvailableFreeSpace(@"0:\");
                     //filesystemtype = fs.GetFileSystemType(@"0:\");
