@@ -32,6 +32,7 @@ namespace NanOS
         string current_directory = @"0:\";
         protected override void BeforeRun()
         {
+            Console.WriteLine("[ NanOS.nansh ] Kernel Loaded! ");
             ConsoleClear();
             Console.WriteLine("[ NanOS.nansh ] Getting information about the time");
             year = Cosmos.HAL.RTC.Year;
@@ -61,19 +62,31 @@ namespace NanOS
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("[ ERROR ] File System Initialization");
                 Console.ForegroundColor = ConsoleColor.White;
+            label:
                 Console.WriteLine("Continue without a file system? Y - Yes N - No");
-                string choose = Console.ReadLine();
-                if(choose == "Y")
+                string chooseYN = Console.ReadLine();
+                switch (chooseYN)
                 {
-                    Console.WriteLine("[ NanOS.nansh ] Attention! The OS works without a file system!");
-                }
-                else if(choose == "N")
-                {
-                    Cosmos.System.Power.Reboot();
+                    case "Y":
+                        Console.WriteLine("[ NanOS.nansh ] Attention! The OS works without a file system!");
+                        break;
+                    case "y":
+                        Console.WriteLine("[ NanOS.nansh ] Attention! The OS works without a file system!");
+                        break;
+                    case "N":
+                        Cosmos.System.Power.Reboot();
+                        break;
+                    case "n":
+                        Cosmos.System.Power.Reboot();
+                        break;
+                    default:
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("[ ERROR ] You entered the wrong letter!");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        goto label;
+                        break;
                 }
             }
-            Console.WriteLine("LOADING NanOS_kernel_1");
-            Console.WriteLine("[ NanOS.nansh ] Kernel Loaded! ");
             ConsoleClear();
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.WriteLine(@"                    NN   NN   AAA   NN   NN  OOOOO   SSSSS  
@@ -266,31 +279,39 @@ namespace NanOS
                     break;
                 case "dir":
                     Console.WriteLine("Current Directory: " + current_directory);
-                    var directory_list = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(current_directory);
-                    foreach (var directoryEntry in directory_list)
+                    try
                     {
-                        try
+                        var directory_list = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(current_directory);
+                        foreach (var directoryEntry in directory_list)
                         {
-                            var entry_type = directoryEntry.mEntryType;
-                            if (entry_type == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.File)
+                            try
                             {
-                                Console.ForegroundColor = ConsoleColor.Magenta;
-                                Console.WriteLine("| <File>       " + directoryEntry.mName);
-                                Console.ForegroundColor = ConsoleColor.White;
+                                var entry_type = directoryEntry.mEntryType;
+                                if (entry_type == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.File)
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Magenta;
+                                    Console.WriteLine("| <File>       " + directoryEntry.mName);
+                                    Console.ForegroundColor = ConsoleColor.White;
+                                }
+                                if (entry_type == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.Directory)
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Blue;
+                                    Console.WriteLine("| <Directory>      " + directoryEntry.mName);
+                                    Console.ForegroundColor = ConsoleColor.White;
+                                }
                             }
-                            if (entry_type == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.Directory)
+                            catch (Exception e)
                             {
-                                Console.ForegroundColor = ConsoleColor.Blue;
-                                Console.WriteLine("| <Directory>      " + directoryEntry.mName);
-                                Console.ForegroundColor = ConsoleColor.White;
+                                Console.WriteLine("Error: Directory not found");
+                                Console.WriteLine(e.ToString());
                             }
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine("Error: Directory not found");
-                            Console.WriteLine(e.ToString());
-                        }
 
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                        break;
                     }
                     break;
                 case "cdir":
@@ -299,47 +320,77 @@ namespace NanOS
                 case "mkdir":
                     Console.WriteLine("Enter Directory name");
                     var dirname = Console.ReadLine();
-                    fs.CreateDirectory(current_directory + dirname);
-                    Console.WriteLine("Directory {0} created in {1}", dirname, current_directory);
+                    try
+                    {
+                        fs.CreateDirectory(current_directory + dirname);
+                        Console.WriteLine("Directory {0} created in {1}", dirname, current_directory);
+                    }catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                        break;
+                    }
+                    
                     break;
                 case "mkfile":
                     Console.WriteLine("Enter file name");
                     var filename = Console.ReadLine();
-                    fs.CreateFile(current_directory + filename);
-                    Console.WriteLine("File {0} created in {1}", filename, current_directory);
+                    try
+                    {
+                        fs.CreateFile(current_directory + filename);
+                        Console.WriteLine("File {0} created in {1}", filename, current_directory);
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                        break;
+                    }
                     break;
                 case "deldir":
                     Console.WriteLine("Enter directory name");
                     dirname = Console.ReadLine();
-                    if (dirname == "System")
+                    try
                     {
-                        Console.WriteLine("This is system directory! You cannot delete it!");
+                        if (dirname == "System")
+                        {
+                            Console.WriteLine("This is system directory! You cannot delete it!");
+                            break;
+                        }
+                        if (Directory.Exists(current_directory + dirname))
+                        {
+                            Sys.FileSystem.VFS.VFSManager.DeleteDirectory(current_directory + dirname, true);
+                            Console.WriteLine("Directory {0} deleted in {1}", dirname, current_directory);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Error: NanOS.Directory.Not.Found");
+                        }
+                    }catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
                         break;
                     }
-                    if (Directory.Exists(current_directory + dirname))
-                    {
-                        Sys.FileSystem.VFS.VFSManager.DeleteDirectory(current_directory + dirname, true);
-                        Console.WriteLine("Directory {0} deleted in {1}", dirname, current_directory);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Error: NanOS.Directory.Not.Found");
-                    }
-
                     break;
 
                 case "delfile":
                     //Удаление файла
                     Console.WriteLine("Enter file name");
                     filename = Console.ReadLine();
-                    if (File.Exists(current_directory + filename))
+                    try
                     {
-                        Sys.FileSystem.VFS.VFSManager.DeleteFile(current_directory + filename);
-                        Console.WriteLine("File {0} deleted in {1}", filename, current_directory);
+                        if (File.Exists(current_directory + filename))
+                        {
+                            Sys.FileSystem.VFS.VFSManager.DeleteFile(current_directory + filename);
+                            Console.WriteLine("File {0} deleted in {1}", filename, current_directory);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Error: NanOS.File.Not.Found");
+                        }
                     }
-                    else
+                    catch(Exception ex)
                     {
-                        Console.WriteLine("Error: NanOS.File.Not.Found");
+                        Console.WriteLine(ex.ToString());
+                        break;
                     }
                     break;
                 case "writefile":
@@ -347,24 +398,31 @@ namespace NanOS
                     Console.WriteLine("Welcome to NanOS writestr app!");
                     Console.WriteLine("Please enter file name!");
                     filename = Console.ReadLine();
-                    if (File.Exists(current_directory + filename))
+                    try
                     {
-                        Console.WriteLine("Write text");
-                        var StringTXT = Console.ReadLine();
-                        try
+                        if (File.Exists(current_directory + filename))
                         {
-                            File.WriteAllText(current_directory + filename, StringTXT);
-                            Console.WriteLine("Text writed succeful!");
+                            Console.WriteLine("Write text");
+                            var StringTXT = Console.ReadLine();
+                            try
+                            {
+                                File.WriteAllText(current_directory + filename, StringTXT);
+                                Console.WriteLine("Text writed succeful!");
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("Error!");
+                                Console.WriteLine(e.ToString());
+                            }
                         }
-                        catch (Exception e)
+                        else
                         {
-                            Console.WriteLine("Error!");
-                            Console.WriteLine(e.ToString());
+                            Console.WriteLine("Error: NanOS.File.Not.Found");
+                            break;
                         }
-                    }
-                    else
+                    }catch(Exception ex)
                     {
-                        Console.WriteLine("Error: NanOS.File.Not.Found");
+                        Console.WriteLine(ex.ToString());
                         break;
                     }
                     break;
@@ -382,11 +440,10 @@ namespace NanOS
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine("---------------------------------------");
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        Console.Write("Error: ");
-                        Console.Write(e.ToString());
-                        Console.WriteLine("");
+                        Console.WriteLine(ex.ToString());
+                        break;
                     }
                     break;
                 case "copyfile":
@@ -394,16 +451,24 @@ namespace NanOS
                     Console.WriteLine("Enter the directory where you want to copy the file");
                     Console.Write(@"0:\");
                     dirtocopy = @"0:\" + Console.ReadLine();
-                    if (Directory.Exists(dirtocopy))
+                    try
                     {
-                        Console.WriteLine("Please enter file name");
-                        filename = Console.ReadLine();
-                        File.Copy(current_directory + filename, dirtocopy);
-                        Console.WriteLine("File {0} copied to {1}", filename, dirtocopy);
+                        if (Directory.Exists(dirtocopy))
+                        {
+                            Console.WriteLine("Please enter file name");
+                            filename = Console.ReadLine();
+                            File.Copy(current_directory + filename, dirtocopy);
+                            Console.WriteLine("File {0} copied to {1}", filename, dirtocopy);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Error: NanOS.Directory.Not.Found");
+                        }
                     }
-                    else
+                    catch(Exception ex)
                     {
-                        Console.WriteLine("Error: NanOS.Directory.Not.Found");
+                        Console.WriteLine(ex.ToString());
+                        break;
                     }
                     break;
                 case "renamefile":
@@ -421,6 +486,7 @@ namespace NanOS
                     catch (Exception e)
                     {
                         Console.WriteLine(e.ToString());
+                        break;
                     }
                     break;
                 case "movefile":
@@ -430,20 +496,35 @@ namespace NanOS
                     Console.WriteLine("Enter directoey");
                     Console.Write(@"0:\");
                     dirtomove = @"0:\" + Console.ReadLine();
-                    File.Copy(current_directory + filename, dirtomove + filename);
-                    Sys.FileSystem.VFS.VFSManager.DeleteFile(current_directory + filename);
+                    try
+                    {
+                        File.Copy(current_directory + filename, dirtomove + filename);
+                        Sys.FileSystem.VFS.VFSManager.DeleteFile(current_directory + filename);
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                    }
                     break;
                 case "diskinfo":
                     //Получить тип файловой системы
-                    long available_space = Sys.FileSystem.VFS.VFSManager.GetAvailableFreeSpace(@"0:\");
-                    //filesystemtype = fs.GetFileSystemType(@"0:\");
-                    //Получить размер диска
-                   // long total_size = fs.GetTotalSize(@"0:\");
-                    //Свободное место
-                    available_space = Sys.FileSystem.VFS.VFSManager.GetAvailableFreeSpace(@"0:\");
-                    Console.WriteLine("Available Free Space: " + available_space + " B");
-                    //Console.WriteLine("Total size: " + total_size + " B");
-                    //Console.WriteLine("File System type: " + filesystemtype);
+                    try
+                    {
+                        long available_space = Sys.FileSystem.VFS.VFSManager.GetAvailableFreeSpace(@"0:\");
+                        filesystemtype = fs.GetFileSystemType(@"0:\");
+                        //Получить размер диска
+                        long total_size = fs.GetTotalSize(@"0:\");
+                        //Свободное место
+                        available_space = Sys.FileSystem.VFS.VFSManager.GetAvailableFreeSpace(@"0:\");
+                        Console.WriteLine("Available Free Space: " + available_space + " B");
+                        Console.WriteLine("Total size: " + total_size + " B");
+                        Console.WriteLine("File System type: " + filesystemtype);
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                        break;
+                    }
                     break;
                 case "cd":
                     //Смена директорий
@@ -469,6 +550,7 @@ namespace NanOS
                     catch (Exception e)
                     {
                         Console.WriteLine(e.ToString());
+                        break;
                     }
                     break;
                 case "":
