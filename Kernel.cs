@@ -12,6 +12,12 @@ using IL2CPU.API.Attribs;
 using NanOS;
 using Cosmos.HAL.Network;
 using Cosmos.Core.IOGroup;
+using Cosmos.System.Network;
+using Cosmos.System.Network.Config;
+using Cosmos.System.Network.IPv4;
+using Cosmos.System.Network.IPv4.TCP;
+using Cosmos.System.Network.IPv4.TCP.FTP;
+using Cosmos.System.Network.IPv4.UDP.DHCP;
 
 namespace NanOS
 {
@@ -30,7 +36,10 @@ namespace NanOS
         byte Minutes = Cosmos.HAL.RTC.Minute;
         Sys.FileSystem.CosmosVFS fs;
         string current_directory = @"cdir.empty";
+        public bool fsinitialized;
+
         //В СЛУЧАЕ ОШИБКИ string current_directory = @"0:\";
+        [Obsolete]
         protected override void BeforeRun()
         {
             Console.WriteLine("[ NanOS.nansh ] Kernel Loaded! ");
@@ -55,7 +64,48 @@ namespace NanOS
                 Console.ForegroundColor = ConsoleColor.Green;
                 current_directory = @"0:\";
                 Console.WriteLine("[ OK ] File System Initialization");
+                fsinitialized = true;
                 Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("[ NanOS.nansh ] Search for system folders...");
+                try
+                {
+                    if (!Directory.Exists(@"0:\System\"))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("[ ERROR ] The System folder was not found. Folder Recovery...");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine("[ NanOS.nansh ] Creating a System Folder......");
+                        fs.CreateDirectory(@"0:\System\");
+                        Console.WriteLine("[ NanOS.nansh ] Creating a DataBase Folder......");
+                        fs.CreateDirectory(@"0:\System\DataBase\");
+                        Console.WriteLine("[ NanOS.nansh ] Creating a Users Folder......");
+                        fs.CreateDirectory(@"0:\System\DataBase\Users\");
+                        Console.WriteLine("[ NanOS.nansh ] Creating a file with username information...");
+                        fs.CreateFile(@"0:\System\DataBase\Users\Users.ndb");
+                        Console.WriteLine("[ NanOS.nansh ] Enter your UserName!");
+                        Console.Write("Username: ");
+                        var usrnmeforfile = Console.ReadLine();
+                        File.WriteAllText(@"0:\System\DataBase\Users\Users.ndb", usrnmeforfile);
+                        username = File.ReadAllText(@"0:\System\DataBase\Users\Users.ndb");
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("[ OK ] The system folder has been restored!");
+                        Console.ForegroundColor = ConsoleColor.White; ;
+                    }else if (Directory.Exists(@"0:\System\"))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("[ OK ] System folder found!");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine("[ NanOS.nansh ] User search.....");
+                        username = File.ReadAllText(@"0:\System\DataBase\Users\Users.ndb");
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("[ OK ] Found user {0}", username);
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
                 Console.WriteLine("[ NanOS.nansh ] Press Any Key To Continue");
                 Console.ReadKey();
             }
@@ -63,6 +113,7 @@ namespace NanOS
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("[ ERROR ] File System Initialization");
+                fsinitialized = false;
                 Console.ForegroundColor = ConsoleColor.White;
             gtchoose:
                 Console.WriteLine("Continue without a file system? Y - Yes N - No");
@@ -97,17 +148,21 @@ namespace NanOS
                     NN  NNN AAAAAAA NN  NNN OO   OO      SS 
                     NN   NN AA   AA NN   NN  OOOO0   SSSSS  ");
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("             NanOS successfully loaded! Please write your username");
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write("Username: ");
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            username = Console.ReadLine();
-           if(username == "")
+            Console.WriteLine("                       NanOS successfully loaded!");
+            if(fsinitialized == false)
             {
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine("          You didn't provide a username. You will continue as userNanOS");
-                Console.ForegroundColor = ConsoleColor.White;
-                username = "userNanOS";
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("Enter your username");
+                Console.Write("Username: ");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                username = Console.ReadLine();
+                if (username == "")
+                {
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.WriteLine("          You didn't provide a username. You will continue as userNanOS");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    username = "userNanOS";
+                }
             }
             else
             {
@@ -238,6 +293,14 @@ namespace NanOS
                     CPU_vendorname = Cosmos.Core.CPU.GetCPUVendorName();
                     Console.WriteLine("CPU: " + cpubrand);
                     Console.WriteLine("CPU Vendor Name: " + CPU_vendorname);
+                    if (Environment.Is64BitProcess)
+                    {
+                        Console.WriteLine("Bit architecture: 64-bit");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Bit architecture: 32-bit");
+                    }
                     break;
                 case "help":
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -270,13 +333,35 @@ namespace NanOS
                     Sys.PCSpeaker.Beep();
                     break;
                 case "chngeuname":
-                    Console.ForegroundColor = ConsoleColor.Magenta;
-                    Console.WriteLine("Write your new UserName");
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    username = Console.ReadLine();
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine("Your username changed succeful! Hello {0}", username);
-                    Console.ForegroundColor = ConsoleColor.White;
+                    if(fsinitialized == false)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        Console.WriteLine("Write your new UserName");
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        username = Console.ReadLine();
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.WriteLine("Your username changed succeful! Hello {0}", username);
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                    else if(fsinitialized == true)
+                    {
+                        try
+                        {
+                            Console.ForegroundColor = ConsoleColor.Magenta;
+                            Console.WriteLine("Write your new UserName");
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            username = Console.ReadLine();
+                            File.WriteAllText(@"0:\System\DataBase\Users\Users.ndb", username);
+                            username = File.ReadAllText(@"0:\System\DataBase\Users\Users.ndb"); 
+                            Console.ForegroundColor = ConsoleColor.Blue;
+                            Console.WriteLine("Your username changed succeful! Hello {0}", username);
+                            Console.ForegroundColor = ConsoleColor.White;
+                        }catch(Exception ex)
+                        {
+
+                        }
+                    }
+                    
                     break;
                 case "dir":
                     Console.WriteLine("Current Directory: " + current_directory);
@@ -356,6 +441,31 @@ namespace NanOS
                             Console.WriteLine("This is system directory! You cannot delete it!");
                             break;
                         }
+                        if (dirname == "system")
+                        {
+                            Console.WriteLine("This is system directory! You cannot delete it!");
+                            break;
+                        }
+                        if (dirname == "DataBase")
+                        {
+                            Console.WriteLine("This is system directory! You cannot delete it!");
+                            break;
+                        }
+                        if (dirname == "database")
+                        {
+                            Console.WriteLine("This is system directory! You cannot delete it!");
+                            break;
+                        }
+                        if (dirname == "Users")
+                        {
+                            Console.WriteLine("This is system directory! You cannot delete it!");
+                            break;
+                        }
+                        if (dirname == "users")
+                        {
+                            Console.WriteLine("This is system directory! You cannot delete it!");
+                            break;
+                        }
                         if (Directory.Exists(current_directory + dirname))
                         {
                             Sys.FileSystem.VFS.VFSManager.DeleteDirectory(current_directory + dirname, true);
@@ -378,6 +488,11 @@ namespace NanOS
                     filename = Console.ReadLine();
                     try
                     {
+                        if(filename == "Users.ndb")
+                        {
+                            Console.WriteLine("You cannot delete this file!");
+                            break;
+                        }
                         if (File.Exists(current_directory + filename))
                         {
                             Sys.FileSystem.VFS.VFSManager.DeleteFile(current_directory + filename);
@@ -559,11 +674,22 @@ namespace NanOS
                     Console.WriteLine("");
                     break;
                 case "reboot":
+                    Console.WriteLine("Rebooting in 3 seconds!");
+                    System.Threading.Thread.Sleep(1000);
+                    Console.WriteLine("Rebooting in 2 seconds!");
+                    System.Threading.Thread.Sleep(1000);
+                    Console.WriteLine("Rebooting in 1 second!");
+                    System.Threading.Thread.Sleep(1000);
                     Cosmos.System.Power.Reboot();
                     break;
                 case "shutdown":
+                    Console.WriteLine("Shutting down in 3 seconds!");
+                    System.Threading.Thread.Sleep(1000);
+                    Console.WriteLine("Shutting down in 2 seconds!");
+                    System.Threading.Thread.Sleep(1000);
+                    Console.WriteLine("Shutting down in 1 second!");
+                    System.Threading.Thread.Sleep(1000);
                     Cosmos.System.Power.Shutdown();
-                    Console.WriteLine("Now you can power-off your PC!");
                     break;
                 case "clear":
                     ConsoleClear();
