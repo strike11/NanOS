@@ -2,6 +2,7 @@
 using System.Text;
 using System.IO;
 using Sys = Cosmos.System;
+using System.Diagnostics;
 using Cosmos.System.Graphics;
 using Point = Cosmos.System.Graphics.Point;
 using Cosmos.HAL;
@@ -34,9 +35,12 @@ namespace NanOS
         public bool fsinitialized;
         public bool passwordON;
 
+        public object ConfigurationManager { get; private set; }
+
         //В СЛУЧАЕ ОШИБКИ string current_directory = @"0:\";
         protected override void BeforeRun()
         {
+            #region NanOS Launch
             Console.WriteLine("[ NanOS.nansh ] Kernel Loaded! ");
             ConsoleClear();
             Console.WriteLine("[ NanOS.nansh ] Getting information about the time");
@@ -188,6 +192,7 @@ namespace NanOS
                         break;
                 }
             }
+            #endregion
             ConsoleClear();
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.WriteLine(@"                    NN   NN   AAA   NN   NN  OOOOO   SSSSS  
@@ -227,7 +232,9 @@ namespace NanOS
             enterpswrd:
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write("Password: ");
+                Console.ForegroundColor = ConsoleColor.Green;
                 string chckpswrd = Console.ReadLine();
+                Console.ForegroundColor = ConsoleColor.White;
                 if (chckpswrd == password)
                 {
                     Console.WriteLine("             Welcome to NanOS {0}. Press any key to get started!", username);
@@ -708,6 +715,7 @@ namespace NanOS
                         available_space = Sys.FileSystem.VFS.VFSManager.GetAvailableFreeSpace(@"0:\");
                         Console.WriteLine("Available Free Space: " + available_space + " B");
                         Console.WriteLine("Total size: " + total_size + " B");
+
                     }
                     catch (Exception ex)
                     {
@@ -837,11 +845,22 @@ namespace NanOS
             Console.Clear();
             if(File.Exists(@"0:\System\DataBase\Users\Password.ndb"))
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(@"        :::        ::::::::   ::::::::  :::    ::: :::::::::: :::::::::  
+        :+:       :+:    :+: :+:    :+: :+:   :+:  :+:        :+:    :+: 
+        +:+       +:+    +:+ +:+        +:+  +:+   +:+        +:+    +:+ 
+        +#+       +#+    +:+ +#+        +#++:++    +#++:++#   +#+    +:+ 
+        +#+       +#+    +#+ +#+        +#+  +#+   +#+        +#+    +#+ 
+        #+#       #+#    #+# #+#    #+# #+#   #+#  #+#        #+#    #+# 
+        ########## ########   ########  ###    ### ########## #########  ");
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("User {0}'s computer is locked. Please enter a password!", username);
                 Console.WriteLine("User: {0}", username);
                 Console.Write("Password: ");
                 lckscr:
+                Console.ForegroundColor = ConsoleColor.Green;
                 var lckscrpswr = Console.ReadLine();
+                Console.ForegroundColor = ConsoleColor.White;
                 if (lckscrpswr == password)
                 {
                     ConsoleClear();
@@ -849,17 +868,29 @@ namespace NanOS
                 }
                 else
                 {
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
                     Console.WriteLine("Invalid password! Please try again!");
+                    Console.ForegroundColor = ConsoleColor.White;
                     goto lckscr;
                 }
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(@"        :::        ::::::::   ::::::::  :::    ::: :::::::::: :::::::::  
+        :+:       :+:    :+: :+:    :+: :+:   :+:  :+:        :+:    :+: 
+        +:+       +:+    +:+ +:+        +:+  +:+   +:+        +:+    +:+ 
+        +#+       +#+    +:+ +#+        +#++:++    +#++:++#   +#+    +:+ 
+        +#+       +#+    +#+ +#+        +#+  +#+   +#+        +#+    +#+ 
+        #+#       #+#    #+# #+#    #+# #+#   #+#  #+#        #+#    #+# 
+        ########## ########   ########  ###    ### ########## #########  ");
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("User {0}'s computer is locked. Press any key to unlock!", username);
                 Console.ReadKey();
             }
            
         }
+        
     }
 
 }
