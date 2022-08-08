@@ -25,11 +25,6 @@ namespace NanOS
         public string shellname = "nansh";
         public string username = "";
         public string password = "";
-        byte year = Cosmos.HAL.RTC.Year;
-        byte month = Cosmos.HAL.RTC.Month;
-        byte day = Cosmos.HAL.RTC.DayOfTheMonth;
-        byte hour = Cosmos.HAL.RTC.Hour;
-        byte Minutes = Cosmos.HAL.RTC.Minute;
         Sys.FileSystem.CosmosVFS fs;
         string current_directory = @"cdir.empty";
         public bool fsinitialized;
@@ -44,11 +39,7 @@ namespace NanOS
             Console.WriteLine("[ NanOS.nansh ] Kernel Loaded! ");
             ConsoleClear();
             Console.WriteLine("[ NanOS.nansh ] Getting information about the time");
-            year = Cosmos.HAL.RTC.Year;
-            month = Cosmos.HAL.RTC.Month;
-            day = Cosmos.HAL.RTC.DayOfTheMonth;
-            hour = Cosmos.HAL.RTC.Hour;
-            Minutes = Cosmos.HAL.RTC.Minute;
+            Console.WriteLine(DateTime.Now);
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("[ OK ] Getting information about the time");
             Console.ForegroundColor = ConsoleColor.White;
@@ -58,7 +49,6 @@ namespace NanOS
                 fs = new Sys.FileSystem.CosmosVFS();
                 Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
                 fs.CreateDirectory(@"0:\FileSystemInitialization");
-                Directory.Exists(@"0:\FileSystemInitialization");
                 Sys.FileSystem.VFS.VFSManager.DeleteDirectory(@"0:\FileSystemInitialization", true);
                 Console.ForegroundColor = ConsoleColor.Green;
                 current_directory = @"0:\";
@@ -294,22 +284,7 @@ namespace NanOS
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
                 case "date":
-                    year = Cosmos.HAL.RTC.Year;
-                    month = Cosmos.HAL.RTC.Month;
-                    day = Cosmos.HAL.RTC.DayOfTheMonth;
-                    hour = Cosmos.HAL.RTC.Hour;
-                    Minutes = Cosmos.HAL.RTC.Minute;
-                    Console.ForegroundColor = ConsoleColor.Magenta;
-                    Console.WriteLine("");
-                    Console.Write(day);
-                    Console.Write("." + month);
-                    Console.Write("." + year);
-                    Console.WriteLine("");
-                    Console.Write(hour);
-                    Console.Write(":" + Minutes);
-                    Console.WriteLine("");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    //Сюда надо как-то время запихать чтобы отображалсь часы и минуты в видео текста
+                    Console.WriteLine(DateTime.Now);
                     break;
                 case "cow":
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -321,11 +296,6 @@ namespace NanOS
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
                 case "sysinfo":
-                    year = Cosmos.HAL.RTC.Year;
-                    month = Cosmos.HAL.RTC.Month;
-                    day = Cosmos.HAL.RTC.DayOfTheMonth;
-                    hour = Cosmos.HAL.RTC.Hour;
-                    Minutes = Cosmos.HAL.RTC.Minute;
                     //Доступно ОЗУ
                     ulong avialible_ram = Cosmos.Core.GCImplementation.GetAvailableRAM();
                     //Использованно ОЗУ
@@ -371,6 +341,7 @@ namespace NanOS
                     CPU_vendorname = Cosmos.Core.CPU.GetCPUVendorName();
                     Console.WriteLine("CPU: " + cpubrand);
                     Console.WriteLine("CPU Vendor Name: " + CPU_vendorname);
+
                     if (Environment.Is64BitProcess)
                     {
                         Console.WriteLine("Bit architecture: 64-bit");
@@ -827,15 +798,11 @@ namespace NanOS
         }
         public void ConsoleClear()
         {
-            year = Cosmos.HAL.RTC.Year;
-            month = Cosmos.HAL.RTC.Month;
-            day = Cosmos.HAL.RTC.DayOfTheMonth;
-            hour = Cosmos.HAL.RTC.Hour;
-            Minutes = Cosmos.HAL.RTC.Minute;
             Console.Clear();
             Console.BackgroundColor = ConsoleColor.DarkCyan;
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine(" NanOS                                                          {0}.{1}.{2}   {3}:{4}", day, month, year, hour, Minutes);
+            Console.WriteLine(" NanOS                                                       {0}",
+            DateTime.Now);
             Console.BackgroundColor = ConsoleColor.Black;
             Console.WriteLine("");
         }

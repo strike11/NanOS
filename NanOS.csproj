@@ -96,7 +96,7 @@
         <IntelEdison_ISOFile>bin\Debug\net5.0\NanOS.iso</IntelEdison_ISOFile>
         <IntelEdison_CompileVBEMultiboot>False</IntelEdison_CompileVBEMultiboot>
         <IntelEdison_ExtractMapFile>False</IntelEdison_ExtractMapFile>
-        <VMwareEdition>Workstation</VMwareEdition>
+        <VMwareEdition>Player</VMwareEdition>
         <VMware_VMwareEdition>Workstation</VMware_VMwareEdition>
         <PXE_VMwareEdition>Workstation</PXE_VMwareEdition>
         <IntelEdison_VMwareEdition>Workstation</IntelEdison_VMwareEdition>
