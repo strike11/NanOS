@@ -13,6 +13,7 @@ using IL2CPU.API.Attribs;
 using NanOS;
 using Cosmos.HAL.Network;
 using Cosmos.Core.IOGroup;
+using Cosmos.System.ExtendedASCII;
 
 namespace NanOS
 {
@@ -68,7 +69,7 @@ namespace NanOS
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("[ ERROR ] The System folder was not found. Folder Recovery...");
-                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.ForegroundColor = ConsoleColor.Blue;
                         Console.WriteLine("[ NanOS.nansh ] Creating a System Folder......");
                         fs.CreateDirectory(@"0:\System\");
                         Console.WriteLine("[ NanOS.nansh ] Creating a DataBase Folder......");
@@ -78,10 +79,14 @@ namespace NanOS
                         Console.WriteLine("[ NanOS.nansh ] Creating a file with username information...");
                         fs.CreateFile(@"0:\System\DataBase\Users\Users.ndb");
                         Console.WriteLine("[ NanOS.nansh ] Enter your UserName!");
+                        Console.ForegroundColor = ConsoleColor.White;
                         Console.Write("Username: ");
+                        Console.ForegroundColor = ConsoleColor.Green;
                         var usrnmeforfile = Console.ReadLine();
+                        Console.ForegroundColor = ConsoleColor.White;
                         File.WriteAllText(@"0:\System\DataBase\Users\Users.ndb", usrnmeforfile);
                         username = File.ReadAllText(@"0:\System\DataBase\Users\Users.ndb");
+
                         Console.WriteLine("[ NanOS.nansh ] Do you want to set a password for the {0} account?", username);
                     gtchoosepswrd:
                         string choosePSWRD = Console.ReadLine();
