@@ -97,7 +97,7 @@
         <IntelEdison_CompileVBEMultiboot>False</IntelEdison_CompileVBEMultiboot>
         <IntelEdison_ExtractMapFile>False</IntelEdison_ExtractMapFile>
         <VMwareEdition>Player</VMwareEdition>
-        <VMware_VMwareEdition>Workstation</VMware_VMwareEdition>
+        <VMware_VMwareEdition>Player</VMware_VMwareEdition>
         <PXE_VMwareEdition>Workstation</PXE_VMwareEdition>
         <IntelEdison_VMwareEdition>Workstation</IntelEdison_VMwareEdition>
         <HyperV_StackCorruptionDetectionEnabled>True</HyperV_StackCorruptionDetectionEnabled>

@@ -31,8 +31,6 @@ namespace NanOS
         public bool fsinitialized;
         public bool passwordON;
 
-        public object ConfigurationManager { get; private set; }
-
         //В СЛУЧАЕ ОШИБКИ string current_directory = @"0:\";
         protected override void BeforeRun()
         {
@@ -67,50 +65,52 @@ namespace NanOS
                 {
                     if (!Directory.Exists(@"0:\System\"))
                     {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("[ ERROR ] The System folder was not found. Folder Recovery...");
-                        Console.ForegroundColor = ConsoleColor.Blue;
-                        Console.WriteLine("[ NanOS.nansh ] Creating a System Folder......");
                         fs.CreateDirectory(@"0:\System\");
-                        Console.WriteLine("[ NanOS.nansh ] Creating a DataBase Folder......");
                         fs.CreateDirectory(@"0:\System\DataBase\");
-                        Console.WriteLine("[ NanOS.nansh ] Creating a Users Folder......");
                         fs.CreateDirectory(@"0:\System\DataBase\Users\");
-                        Console.WriteLine("[ NanOS.nansh ] Creating a file with username information...");
                         fs.CreateFile(@"0:\System\DataBase\Users\Users.ndb");
-                        Console.WriteLine("[ NanOS.nansh ] Enter your UserName!");
-                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Clear();
+                        Console.SetCursorPosition((Console.WindowWidth - osname.Length) / 2, Console.CursorTop);
+                        Console.WriteLine(osname);
+                        string welcomeinstaller = "Welcome to NanOS! Let's create your account!";
+                        Console.SetCursorPosition((Console.WindowWidth - welcomeinstaller.Length) / 2, Console.CursorTop);
+                        Console.WriteLine(welcomeinstaller);
                         Console.Write("Username: ");
-                        Console.ForegroundColor = ConsoleColor.Green;
                         var usrnmeforfile = Console.ReadLine();
-                        Console.ForegroundColor = ConsoleColor.White;
                         File.WriteAllText(@"0:\System\DataBase\Users\Users.ndb", usrnmeforfile);
                         username = File.ReadAllText(@"0:\System\DataBase\Users\Users.ndb");
-
-                        Console.WriteLine("[ NanOS.nansh ] Do you want to set a password for the {0} account?", username);
+                        Console.Clear();
+                        Console.SetCursorPosition((Console.WindowWidth - osname.Length) / 2, Console.CursorTop);
+                        Console.WriteLine(osname);
+                        welcomeinstaller = username + ", Looks Cool!";
+                        Console.SetCursorPosition((Console.WindowWidth - welcomeinstaller.Length) / 2, Console.CursorTop);
+                        Console.WriteLine(welcomeinstaller);
+                        welcomeinstaller = "Would you like to set a password for account {0}?\nY - yes, N- no";
+                        Console.SetCursorPosition((Console.WindowWidth - welcomeinstaller.Length) / 2, Console.CursorTop);
+                        Console.WriteLine(welcomeinstaller);
                     gtchoosepswrd:
                         string choosePSWRD = Console.ReadLine();
                         switch (choosePSWRD)
                         {
                             case "Y":
-                                Console.WriteLine("[ NanOS.nansh ] Enter a new password for the account {0}", username);
+                                Console.WriteLine("Enter a new password for the account {0}", username);
                                 var NewPassword = Console.ReadLine();
                                 fs.CreateFile(@"0:\System\DataBase\Passwords\Password.ndb");
                                 File.WriteAllText(@"0:\System\DataBase\Users\Password.ndb", NewPassword);
                                 password = File.ReadAllText(@"0:\System\DataBase\Users\Password.ndb");
                                 Console.ForegroundColor = ConsoleColor.Green;
-                                Console.WriteLine("[ OK ] The password for the account {0} has been successfully created!", username);
+                                Console.WriteLine("The password for the account {0} has been successfully created!", username);
                                 passwordON = true;
                                 Console.ForegroundColor = ConsoleColor.White;
                                 break;
                             case "y":
-                                Console.WriteLine("[ NanOS.nansh ] Enter a new password for the account {0}", username);
+                                Console.WriteLine("Enter a new password for the account {0}", username);
                                 NewPassword = Console.ReadLine();
                                 fs.CreateFile(@"0:\System\DataBase\Passwords\Password.ndb");
                                 File.WriteAllText(@"0:\System\DataBase\Users\Password.ndb", NewPassword);
                                 password = File.ReadAllText(@"0:\System\DataBase\Users\Password.ndb");
                                 Console.ForegroundColor = ConsoleColor.Green;
-                                Console.WriteLine("[ OK ] The password for the account {0} has been successfully created!", username);
+                                Console.WriteLine("The password for the account {0} has been successfully created!", username);
                                 passwordON = true;
                                 Console.ForegroundColor = ConsoleColor.White;
                                 break;
@@ -122,15 +122,12 @@ namespace NanOS
                                 break;
                             default:
                                 Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("[ ERROR ] You entered the wrong letter!");
+                                Console.WriteLine("You entered the wrong letter!");
                                 Console.ForegroundColor = ConsoleColor.White;
                                 goto gtchoosepswrd;
                                 break;
                         }
-
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("[ OK ] The system folder has been restored!");
-                        Console.ForegroundColor = ConsoleColor.White; ;
+                        
                     }
                     else if (Directory.Exists(@"0:\System\"))
                     {
@@ -144,7 +141,7 @@ namespace NanOS
                             password = File.ReadAllText(@"0:\System\DataBase\Users\Password.ndb");
                         }
                         Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("[ OK ] Found user {0} | Password protection = {1}", username,passwordON);
+                        Console.WriteLine("[ OK ] Found user {0} | Password protection = {1}", username, passwordON);
                         Console.ForegroundColor = ConsoleColor.White;
                     }
                 }
@@ -153,8 +150,6 @@ namespace NanOS
 
                 }
 
-                Console.WriteLine("[ NanOS.nansh ] Press Any Key To Continue");
-                Console.ReadKey();
             }
             catch (Exception ex)
             {
@@ -252,9 +247,7 @@ namespace NanOS
               $$ |\$$$ |$$  __$$ |$$ |  $$ |$$ |  $$ |$$\   $$ |
               $$ | \$$ |\$$$$$$$ |$$ |  $$ | $$$$$$  |\$$$$$$  |
               \__|  \__| \_______|\__|  \__| \______/  \______/ ");
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("\n                        Visit our website: www.nanos.tk" +
-                "\n");
+            
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine("                        ------------------------------");
             Console.WriteLine("                        Type help to show command list");
@@ -815,7 +808,7 @@ namespace NanOS
         public void LockScreen()
         {
             Console.Clear();
-            if(File.Exists(@"0:\System\DataBase\Users\Password.ndb"))
+            if (File.Exists(@"0:\System\DataBase\Users\Password.ndb"))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(@"        :::        ::::::::   ::::::::  :::    ::: :::::::::: :::::::::  
@@ -829,7 +822,7 @@ namespace NanOS
                 Console.WriteLine("User {0}'s computer is locked. Please enter a password!", username);
                 Console.WriteLine("User: {0}", username);
                 Console.Write("Password: ");
-                lckscr:
+            lckscr:
                 Console.ForegroundColor = ConsoleColor.Green;
                 var lckscrpswr = Console.ReadLine();
                 Console.ForegroundColor = ConsoleColor.White;
@@ -860,9 +853,9 @@ namespace NanOS
                 Console.WriteLine("User {0}'s computer is locked. Press any key to unlock!", username);
                 Console.ReadKey();
             }
-           
+
         }
-        
+
     }
 
 }
