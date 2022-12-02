@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <!--<RuntimeIdentifier>cosmos</RuntimeIdentifier>-->
         <Platform>cosmos</Platform>
         <SupportsX86Intrinsics>false</SupportsX86Intrinsics>
@@ -96,7 +96,7 @@
         <IntelEdison_ISOFile>bin\Debug\net5.0\NanOS.iso</IntelEdison_ISOFile>
         <IntelEdison_CompileVBEMultiboot>False</IntelEdison_CompileVBEMultiboot>
         <IntelEdison_ExtractMapFile>False</IntelEdison_ExtractMapFile>
-        <VMwareEdition>Player</VMwareEdition>
+        <VMwareEdition>Workstation</VMwareEdition>
         <VMware_VMwareEdition>Player</VMware_VMwareEdition>
         <PXE_VMwareEdition>Workstation</PXE_VMwareEdition>
         <IntelEdison_VMwareEdition>Workstation</IntelEdison_VMwareEdition>
@@ -130,10 +130,11 @@
         <Profile>VMware</Profile>
         <Description>Use VMware Player or Workstation to deploy and debug.</Description>
         <PxeInterface>192.168.0.8</PxeInterface>
+        <RemoveBootDebugOutput>False</RemoveBootDebugOutput>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-      <DebugEnabled>True</DebugEnabled>
+      <DebugEnabled>False</DebugEnabled>
       <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 

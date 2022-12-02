@@ -11,14 +11,20 @@ using Cosmos.System.FileSystem;
 using System.Drawing;
 using IL2CPU.API.Attribs;
 using NanOS;
+using Cosmos.HAL.Audio;
 using Cosmos.HAL.Network;
 using Cosmos.Core.IOGroup;
 using Cosmos.System.ExtendedASCII;
+using Cosmos.HAL.Drivers.PCI.Audio;
+using Cosmos.System.Audio.IO;
+using Cosmos.System.Audio;
 
 namespace NanOS
 {
     public class Kernel : Sys.Kernel
     {
+        [ManifestResourceStream(ResourceName = "NanOS.audio.NanOS_StartupSound.wav")]
+        public byte[] startupsound;
         public string osname = "NanOS";
         public string osversion = "1.1";
         public string kernelversion = "NanOS_kernel_1";
@@ -36,7 +42,6 @@ namespace NanOS
         {
             #region NanOS Launch
             Console.WriteLine("[ NanOS.nansh ] Kernel Loaded! ");
-            ConsoleClear();
             Console.WriteLine("[ NanOS.nansh ] Getting information about the time");
             Console.WriteLine(DateTime.Now);
             Console.ForegroundColor = ConsoleColor.Green;
@@ -65,10 +70,7 @@ namespace NanOS
                 {
                     if (!Directory.Exists(@"0:\System\"))
                     {
-                        fs.CreateDirectory(@"0:\System\");
-                        fs.CreateDirectory(@"0:\System\DataBase\");
-                        fs.CreateDirectory(@"0:\System\DataBase\Users\");
-                        fs.CreateFile(@"0:\System\DataBase\Users\Users.ndb");
+                       
                         Console.Clear();
                         Console.SetCursorPosition((Console.WindowWidth - osname.Length) / 2, Console.CursorTop);
                         Console.WriteLine(osname);
@@ -77,6 +79,10 @@ namespace NanOS
                         Console.WriteLine(welcomeinstaller);
                         Console.Write("Username: ");
                         var usrnmeforfile = Console.ReadLine();
+                        fs.CreateDirectory(@"0:\System\");
+                        fs.CreateDirectory(@"0:\System\DataBase\");
+                        fs.CreateDirectory(@"0:\System\DataBase\Users\");
+                        fs.CreateFile(@"0:\System\DataBase\Users\Users.ndb");
                         File.WriteAllText(@"0:\System\DataBase\Users\Users.ndb", usrnmeforfile);
                         username = File.ReadAllText(@"0:\System\DataBase\Users\Users.ndb");
                         Console.Clear();
@@ -85,7 +91,7 @@ namespace NanOS
                         welcomeinstaller = username + ", Looks Cool!";
                         Console.SetCursorPosition((Console.WindowWidth - welcomeinstaller.Length) / 2, Console.CursorTop);
                         Console.WriteLine(welcomeinstaller);
-                        welcomeinstaller = "Would you like to set a password for account {0}?\nY - yes, N- no";
+                        welcomeinstaller = "Would you like to set a password for account " + username + "?\nY - yes, N- no";
                         Console.SetCursorPosition((Console.WindowWidth - welcomeinstaller.Length) / 2, Console.CursorTop);
                         Console.WriteLine(welcomeinstaller);
                     gtchoosepswrd:
@@ -183,6 +189,8 @@ namespace NanOS
                 }
             }
             #endregion
+            
+            
             ConsoleClear();
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.WriteLine(@"                    NN   NN   AAA   NN   NN  OOOOO   SSSSS  
@@ -273,6 +281,26 @@ namespace NanOS
             var input = Console.ReadLine();
             switch (input)
             {
+                case "audio":
+                    try
+                    {
+                        var mixer = new AudioMixer();
+                        var audioStream = MemoryAudioStream.FromWave(startupsound);
+                        var driver = AC97.Initialize(bufferSize: 4096);
+                        mixer.Streams.Add(audioStream);
+
+                        var audioManager = new AudioManager()
+                        {
+                            Stream = mixer,
+                            Output = driver
+                        };
+                        audioManager.Enable();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                    break;
                 case "lockscr":
                     LockScreen();
                     break;
