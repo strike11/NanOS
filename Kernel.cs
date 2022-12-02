@@ -84,6 +84,7 @@ namespace NanOS
                         fs.CreateDirectory(@"0:\System\DataBase\Users\");
                         fs.CreateFile(@"0:\System\DataBase\Users\Users.ndb");
                         File.WriteAllText(@"0:\System\DataBase\Users\Users.ndb", usrnmeforfile);
+
                         username = File.ReadAllText(@"0:\System\DataBase\Users\Users.ndb");
                         Console.Clear();
                         Console.SetCursorPosition((Console.WindowWidth - osname.Length) / 2, Console.CursorTop);
